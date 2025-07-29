@@ -1,0 +1,108 @@
+/* PLEASE NOTE: THESE TAILWIND IMPORTS SHOULD NEVER BE DELETED */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+/* DO NOT DELETE THESE TAILWIND IMPORTS, OTHERWISE THE STYLING WILL NOT RENDER AT ALL */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-up {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px) scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes grow-up {
+  from { height: 0; }
+  to { height: 100%; }
+}
+.timeline-connector {
+  animation: grow-up 1.5s ease-out forwards;
+}
+@keyframes rotate-3d {
+  0% { transform: perspective(1000px) rotateY(0deg); }
+  100% { transform: perspective(1000px) rotateY(360deg); }
+}
+.project-card:hover {
+  box-shadow: 0 25px 50px -12px rgba(255, 107, 0, 0.15);
+  transform: translateY(-5px);
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 10px 5px rgba(255, 107, 0, 0.2); }
+  50% { box-shadow: 0 0 20px 10px rgba(255, 107, 0, 0.4); }
+}
+.pulse-glow {
+  animation: pulse-glow 3s infinite;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  background-color: black;
+  color: white;
+}
+/* Custom cursor */
+.custom-cursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 107, 0, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  transition: width 0.3s, height 0.3s, border-color 0.3s;
+}
+.custom-cursor.hover {
+  width: 40px;
+  height: 40px;
+  border-color: rgba(255, 107, 0, 0.8);
+}
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+/* Improve button hover states */
+button, a {
+  transition: all 0.3s ease;
+}
+/* Fix for scroll button */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.animate-bounce {
+  animation: bounce 1.5s ease infinite;
+}
+.animation-delay-500 {
+  animation-delay: 0.5s;
+}
+/* Ensure the scroll button is above other elements */
+#home .absolute.bottom-10 {
+  z-index: 50 !important;
+}
