@@ -144,6 +144,15 @@ const Projects: React.FC = () => {
     stack: ['Figma', 'photoType', 'Figma Plugin'],
     liveUrl: 'https://www.figma.com/design/gFdsqPnECxksLgfsfhq5mY/Piza-app?node-id=0-1&t=bRlMVsoE03KDSUAC-1',
 
+  },{
+    id: 12,
+    title: 'Mojo Web 3D',
+    description: 'A 3D web application for showcasing properties in a virtual environment.',
+    image: "/mojito.png",
+    category: ['Web Apps'],
+    stack: [ 'React', 'Node.js', 'JavaScript', 'Gsap'],
+    liveUrl: 'https://player.cloudinary.com/embed/?cloud_name=dyogmyud6&public_id=Screen_Recording_2025-07-30_171354_vlqon7&profile=cld-default',
+   
   },];
 
 
