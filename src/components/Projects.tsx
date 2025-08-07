@@ -146,8 +146,8 @@ const Projects: React.FC = () => {
 
   },{
     id: 12,
-    title: 'Mojo Web 3D',
-    description: 'A 3D web application for showcasing properties in a virtual environment.',
+    title: 'Mojito Web 3D',
+    description: 'A 3D web application for showing a 3D model of a mojito.',
     image: "/mojito.png",
     category: ['Web Apps'],
     stack: [ 'React', 'Node.js', 'JavaScript', 'Gsap'],
