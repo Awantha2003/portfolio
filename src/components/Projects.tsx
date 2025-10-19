@@ -153,10 +153,28 @@ const Projects: React.FC = () => {
     stack: [ 'React', 'Node.js', 'JavaScript', 'Gsap'],
     liveUrl: 'https://player.cloudinary.com/embed/?cloud_name=dyogmyud6&public_id=Screen_Recording_2025-07-30_171354_vlqon7&profile=cld-default',
    
+  },{
+    id: 14,
+    title: 'Restaurant Management System',
+    description: 'Complete restaurant management solution for a local client including table booking, menu management, order tracking, and staff scheduling. Increased operational efficiency by 40%.',
+    image: "/Fg2.png",
+    category: ['Clients', 'Web Apps', 'UI/UX'],
+    stack: ['React', 'Express.js', 'MySQL', 'Socket.io', 'Bootstrap'],
+    liveUrl: 'https://www.figma.com/design/gFdsqPnECxksLgfsfhq5mY/Piza-app?node-id=0-1&t=bRlMVsoE03KDSUAC-1',
+    githubUrl: '#'
+  },{
+    id: 16,
+    title: 'Nature Pulse - 1st Client Project',
+    description: 'My first complete client project - a full-stack Ayurvedic healthcare platform connecting patients, doctors, and administrators. Features user management, appointment booking, health tracking, community reports, and product shopping with role-based dashboards.',
+    image: "/ITP1.2.jpeg",
+    category: ['Clients', 'Web Apps', 'UI/UX'],
+    stack: ['React', 'Node.js', 'MongoDB', 'JWT', 'Stripe', 'MERN Stack'],
+    liveUrl: 'https://mysliit-my.sharepoint.com/:v:/g/personal/it23270206_my_sliit_lk/EYcmCIlYMpxNngHzLMpYO2kBB6f38jrZTqX_du9w3ijqwQ?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D&e=7FQR9T',
+    githubUrl: 'https://github.com/Awantha2003/Nature_Pulse.git'
   },];
 
 
-  const categories = ['All', 'Web Apps', 'UI/UX', 'Mobile'];
+  const categories = ['All', 'Web Apps', 'UI/UX', 'Mobile', 'Clients'];
   const filteredProjects = activeCategory === 'All' ? projects : projects.filter(project => project.category.includes(activeCategory));
   return <section id="projects" ref={sectionRef} className="py-24 bg-black relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,107,0,0.05),transparent_70%)]"></div>

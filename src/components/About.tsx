@@ -43,8 +43,8 @@ const About: React.FC = () => {
         {/* Stats counters */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 reveal-element">
           <div className="text-center p-4 bg-gray-900/30 rounded-lg border border-gray-800">
-            <AnimatedCounter end={5} suffix="+" className="text-4xl font-bold text-orange-500" />
-            <p className="text-gray-300 mt-2">Years Experience</p>
+            <AnimatedCounter end={3} suffix="+" className="text-4xl font-bold text-orange-500" />
+            <p className="text-gray-300 mt-2">Learning Experience</p>
           </div>
           <div className="text-center p-4 bg-gray-900/30 rounded-lg border border-gray-800">
             <AnimatedCounter end={20} suffix="+" className="text-4xl font-bold text-orange-500" />
