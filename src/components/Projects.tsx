@@ -154,6 +154,24 @@ const Projects: React.FC = () => {
     liveUrl: 'https://player.cloudinary.com/embed/?cloud_name=dyogmyud6&public_id=Screen_Recording_2025-07-30_171354_vlqon7&profile=cld-default',
    
   },{
+    id: 13,
+    title: 'MacBook Online Store',
+    description: 'Apple-inspired product showcase featuring interactive 3D MacBook visualization with Three.js, smooth scroll animations with GSAP, and elegant storytelling. Built with React and Tailwind CSS for a premium, responsive experience.',
+    image: "/Mac.mp4",
+    category: ['Web Apps'],
+    stack: ['React', 'Three.js', 'GSAP', 'TailwindCSS', '3D Design'],
+    liveUrl: 'https://player.cloudinary.com/embed/?cloud_name=dyogmyud6&public_id=Mac_Store_Demo&profile=cld-default',
+    githubUrl: '#'
+  },{
+    id: 15,
+    title: 'Apple iPhone 15 Pro Website',
+    description: 'High-end product marketing website featuring realistic 3D iPhone models with React Three Fiber and Drei. Includes multi-color/size exploration, GSAP scroll animations, video carousel, and production-ready responsive design.',
+    image: "/Iphon.mp4",
+    category: ['Web Apps'],
+    stack: ['React', 'Three.js', 'React Three Fiber', 'GSAP', 'Drei'],
+    liveUrl: 'https://player.cloudinary.com/embed/?cloud_name=dyogmyud6&public_id=iPhone_Demo&profile=cld-default',
+    githubUrl: '#'
+  },{
     id: 14,
     title: 'Restaurant Management System',
     description: 'Complete restaurant management solution for a local client including table booking, menu management, order tracking, and staff scheduling. Increased operational efficiency by 40%.',
@@ -228,7 +246,18 @@ const Projects: React.FC = () => {
         }}>
               {/* Project image with parallax effect */}
               <div className="h-64 overflow-hidden">
-                <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:translate-y-2" />
+                {project.image.endsWith('.mp4') ? (
+                  <video 
+                    src={project.image} 
+                    autoPlay 
+                    loop 
+                    muted 
+                    playsInline
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:translate-y-2"
+                  />
+                ) : (
+                  <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:translate-y-2" />
+                )}
                 {/* Hover overlay with animation */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
