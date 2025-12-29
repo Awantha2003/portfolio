@@ -9,6 +9,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ScrollProgress from './components/ui/ScrollProgress';
 import ParticleBackground from './components/ui/ParticleBackground';
+import WhatsAppButton from './components/WhatsAppButton';
 export function App() {
   const [scrollY, setScrollY] = useState(0);
   useEffect(() => {
@@ -23,6 +24,7 @@ export function App() {
   return <div className="bg-black text-white min-h-screen w-full">
       <ParticleBackground />
       <ScrollProgress />
+      <WhatsAppButton />
       <Header scrollY={scrollY} />
       <main>
         <Hero />
