@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Button from './ui/Button';
 import TypewriterText from './ui/TypewriterText';
 import FloatingTag from './ui/FloatingTag';

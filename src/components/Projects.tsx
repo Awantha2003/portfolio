@@ -1,19 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { ExternalLinkIcon, GithubIcon } from 'lucide-react';
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  category: string[];
-  stack: string[];
-  liveUrl?: string;
-  githubUrl?: string;
-  FigmaUrl?: string;
-}
+import type { Project } from '../types/project';
+import { ADMIN_PROJECTS_EVENT, getAdminProjects } from '../utils/adminProjects';
+
 const Projects: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [isVisible, setIsVisible] = useState(false);
+  const [adminProjects, setAdminProjects] = useState<Project[]>([]);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -24,17 +17,35 @@ const Projects: React.FC = () => {
     }, {
       threshold: 0.1
     });
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+    const section = sectionRef.current;
+
+    if (section) {
+      observer.observe(section);
     }
+
     return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
+      if (section) {
+        observer.unobserve(section);
       }
     };
   }, []);
 
-  const projects: Project[] = [{
+  useEffect(() => {
+    const syncAdminProjects = () => {
+      setAdminProjects(getAdminProjects());
+    };
+
+    syncAdminProjects();
+    window.addEventListener(ADMIN_PROJECTS_EVENT, syncAdminProjects);
+    window.addEventListener('storage', syncAdminProjects);
+
+    return () => {
+      window.removeEventListener(ADMIN_PROJECTS_EVENT, syncAdminProjects);
+      window.removeEventListener('storage', syncAdminProjects);
+    };
+  }, []);
+
+  const defaultProjects: Project[] = [{
     id: 1,
     title: ' Medi Track ',
     description: 'A web-based pharmacy management app that automates inventory, orders, deliveries, and prescriptions. Features real-time stock tracking, geolocation, and AI-based chat. Built with MERN stack using Agile methods and CI/CD.',
@@ -191,6 +202,7 @@ const Projects: React.FC = () => {
     githubUrl: 'https://github.com/Awantha2003/Nature_Pulse.git'
   },];
 
+  const projects = [...adminProjects, ...defaultProjects];
 
   const categories = ['All', 'Web Apps', 'UI/UX', 'Mobile', 'Clients'];
   const filteredProjects = activeCategory === 'All' ? projects : projects.filter(project => project.category.includes(activeCategory));

@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import Button from './ui/Button';
 import { SendIcon } from 'lucide-react';
+import ImageUpload from './ImageUpload';
+
+interface UploadedImage {
+  publicId: string;
+  secureUrl: string;
+  width: number;
+  height: number;
+  format: string;
+}
+
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -8,6 +18,8 @@ const Contact: React.FC = () => {
     message: ''
   });
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [uploadedImage, setUploadedImage] = useState<UploadedImage | null>(null);
+  const [formError, setFormError] = useState('');
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {
       name,
@@ -18,20 +30,40 @@ const Contact: React.FC = () => {
       [name]: value
     }));
   };
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormStatus('submitting');
-    // Simulate form submission
-    setTimeout(() => {
+    setFormError('');
+
+    try {
+      const response = await fetch('/.netlify/functions/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...formData,
+          imageUrl: uploadedImage?.secureUrl
+        })
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error ?? 'Message submission failed');
+      }
+
       setFormStatus('success');
       setFormData({
         name: '',
         email: '',
         message: ''
       });
-      // Reset status after 3 seconds
+      setUploadedImage(null);
       setTimeout(() => setFormStatus('idle'), 3000);
-    }, 1500);
+    } catch (error) {
+      setFormStatus('error');
+      setFormError(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
+    }
   };
   return <section id="contact" className="py-24 bg-black relative">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(255,107,0,0.1),transparent_70%)]"></div>
@@ -64,6 +96,7 @@ const Contact: React.FC = () => {
               </label>
               <textarea id="message" name="message" value={formData.message} onChange={handleChange} required rows={6} className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 transition-all" placeholder="Tell me about your project..." />
             </div>
+            <ImageUpload value={uploadedImage} onChange={setUploadedImage} />
             <div className="flex justify-center">
               <Button type="submit" className="px-8 py-3" disabled={formStatus === 'submitting'}>
                 {formStatus === 'submitting' ? <span className="flex items-center">
@@ -84,7 +117,7 @@ const Contact: React.FC = () => {
               </Button>
             </div>
             {formStatus === 'error' && <p className="text-red-500 text-center mt-4">
-                Something went wrong. Please try again.
+                {formError}
               </p>}
           </form>
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">

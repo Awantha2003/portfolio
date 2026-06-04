@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import About from './components/About';
 import Resume from './components/Resume';
 import Projects from './components/Projects';
+import AdminSection from './components/AdminSection';
 import Skills from './components/Skills';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
@@ -12,6 +13,8 @@ import ParticleBackground from './components/ui/ParticleBackground';
 import WhatsAppButton from './components/WhatsAppButton';
 export function App() {
   const [scrollY, setScrollY] = useState(0);
+  const isAdminPage = window.location.pathname === '/admin';
+
   useEffect(() => {
     const handleScroll = () => {
       setScrollY(window.scrollY);
@@ -26,14 +29,16 @@ export function App() {
       <ScrollProgress />
       <WhatsAppButton />
       <Header scrollY={scrollY} />
-      <main>
-        <Hero />
-        <About />
-        <Resume />
-        <Projects />
-        <Skills />
-        <Contact />
-      </main>
+      {isAdminPage ? <main className="pt-20">
+          <AdminSection />
+        </main> : <main>
+          <Hero />
+          <About />
+          <Resume />
+          <Projects />
+          <Skills />
+          <Contact />
+        </main>}
       <Footer />
     </div>;
 }
