@@ -17,8 +17,8 @@ export default function handler(request: ApiRequest, response: ApiResponse) {
 
   const email = typeof request.body?.email === 'string' ? request.body.email.trim() : '';
   const password = typeof request.body?.password === 'string' ? request.body.password : '';
-  const adminEmail = process.env.ADMIN_EMAIL || process.env.VITE_ADMIN_EMAIL;
-  const adminPassword = process.env.ADMIN_PASSWORD || process.env.VITE_ADMIN_PASSWORD;
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_PASSWORD;
 
   if (!adminEmail || !adminPassword) {
     response.status(500).json({ error: 'Admin login is not configured' });
