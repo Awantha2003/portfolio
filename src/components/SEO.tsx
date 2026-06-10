@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 
-const SITE_URL = 'https://portfolio-tau-sepia-34.vercel.app/';
+const SITE_URL = 'https://awantha-imesh-portfolio.vercel.app/';
 const SITE_TITLE = 'Awantha Imesh | Full Stack Developer & UI/UX Engineer';
 const SITE_DESCRIPTION =
-  'Awantha Imesh is a full stack developer and UI/UX engineer building React, MERN, Spring Boot, mobile, and product design projects in Sri Lanka.';
+  'Official portfolio of Awantha Imesh, a full stack developer and UI/UX engineer in Sri Lanka building React, MERN, Spring Boot, mobile, AI, and product design projects.';
 
 const setMeta = (selector: string, attribute: 'content' | 'href', value: string) => {
   const element = document.head.querySelector(selector);

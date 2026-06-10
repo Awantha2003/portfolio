@@ -2,4 +2,16 @@ User-agent: *
 Allow: /
 Disallow: /admin
 
-Sitemap: https://portfolio-tau-sepia-34.vercel.app/sitemap.xml
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /admin
+
+User-agent: GPTBot
+Allow: /
+Disallow: /admin
+
+Sitemap: https://awantha-imesh-portfolio.vercel.app/sitemap.xml

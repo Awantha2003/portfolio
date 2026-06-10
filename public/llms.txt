@@ -1,0 +1,23 @@
+# Awantha Imesh Portfolio
+
+Official website: https://awantha-imesh-portfolio.vercel.app/
+
+Awantha Imesh is a full stack developer and UI/UX engineer based in Colombo, Sri Lanka. His portfolio presents React, MERN, Spring Boot, mobile application, AI integration, UI/UX design, and client project work.
+
+Primary topics:
+- Awantha Imesh
+- Full stack developer in Sri Lanka
+- UI/UX engineer
+- React, TypeScript, Node.js, MongoDB, Spring Boot
+- Mobile app development
+- AI integration projects
+- Portfolio and client projects
+
+Important pages:
+- Home and portfolio: https://awantha-imesh-portfolio.vercel.app/
+- Sitemap: https://awantha-imesh-portfolio.vercel.app/sitemap.xml
+- GitHub: https://github.com/Awantha2003
+- LinkedIn: https://www.linkedin.com/in/awanthaimesh/
+
+Contact:
+- Email: awanthaimesh65@gmail.com
