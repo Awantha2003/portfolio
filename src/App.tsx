@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 import ScrollProgress from './components/ui/ScrollProgress';
 import ParticleBackground from './components/ui/ParticleBackground';
 import WhatsAppButton from './components/WhatsAppButton';
+import SEO from './components/SEO';
 export function App() {
   const [scrollY, setScrollY] = useState(0);
   const isAdminPage = window.location.pathname === '/admin';
@@ -25,6 +26,7 @@ export function App() {
     };
   }, []);
   return <div className="bg-black text-white min-h-screen w-full">
+      <SEO />
       <ParticleBackground />
       <ScrollProgress />
       <WhatsAppButton />
