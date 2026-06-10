@@ -26,14 +26,19 @@ const Contact: React.FC = () => {
     setFormError('');
 
     try {
-      const mailtoUrl = new URL('mailto:awanthaimesh65@gmail.com');
-      mailtoUrl.searchParams.set('subject', `Portfolio message from ${formData.name}`);
-      mailtoUrl.searchParams.set(
-        'body',
-        `Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`
-      );
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+      const result = await response.json();
 
-      window.location.href = mailtoUrl.toString();
+      if (!response.ok) {
+        throw new Error(result.error ?? 'Message submission failed');
+      }
+
       setFormStatus('success');
       setFormData({
         name: '',
@@ -43,7 +48,7 @@ const Contact: React.FC = () => {
       setTimeout(() => setFormStatus('idle'), 3000);
     } catch (error) {
       setFormStatus('error');
-      setFormError(error instanceof Error ? error.message : 'Could not open your email app. Please email me directly.');
+      setFormError(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
     }
   };
   return <section id="contact" className="py-24 bg-black relative">

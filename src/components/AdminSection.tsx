@@ -16,10 +16,6 @@ const emptyForm = {
   FigmaUrl: ''
 };
 
-const canUseStaticAdminLogin = () =>
-  Boolean(import.meta.env.VITE_ADMIN_EMAIL) &&
-  Boolean(import.meta.env.VITE_ADMIN_PASSWORD);
-
 const AdminSection: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => window.sessionStorage.getItem('portfolio-admin-auth') === 'true');
   const [loginData, setLoginData] = useState({
@@ -72,15 +68,17 @@ const AdminSection: React.FC = () => {
     setLoginError('');
 
     try {
-      if (!canUseStaticAdminLogin()) {
-        throw new Error('Admin login is not configured.');
-      }
+      const response = await fetch('/api/admin-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(loginData)
+      });
+      const result = await response.json();
 
-      if (
-        loginData.email.trim() !== import.meta.env.VITE_ADMIN_EMAIL ||
-        loginData.password !== import.meta.env.VITE_ADMIN_PASSWORD
-      ) {
-        throw new Error('Invalid admin email or password');
+      if (!response.ok) {
+        throw new Error(result.error ?? 'Admin login failed');
       }
 
       window.sessionStorage.setItem('portfolio-admin-auth', 'true');
@@ -162,7 +160,7 @@ const AdminSection: React.FC = () => {
           <h2 className="mb-4 text-3xl font-bold md:text-4xl">
             Admin <span className="text-orange-500">Projects</span>
           </h2>
-          <p className="text-xl text-gray-300">Upload new project work saved in this browser.</p>
+          <p className="text-xl text-gray-300">Upload new project work with Vercel API image uploads.</p>
         </div>
 
         {!isLoggedIn ? (

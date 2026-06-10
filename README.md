@@ -1,28 +1,38 @@
 # Portfolio
 
-React, Vite, and TypeScript static portfolio app.
+React, Vite, TypeScript, and Vercel API portfolio app.
 
 ## Scripts
 
 ```bash
 npm run dev
+npm run dev:vercel
 npm run build
 npm run lint
 ```
 
-## Static Features
+## Backend
 
-This project is frontend-only for live hosting.
+Backend endpoints run as Vercel serverless functions in `api`.
 
-- The contact form opens an email draft to `awanthaimesh65@gmail.com`.
-- Admin-added projects are saved in browser `localStorage`.
-- Uploaded admin images are stored as local data URLs in the same browser.
+- `POST /api/contact` accepts contact form submissions.
+- `POST /api/upload-image` uploads base64 image data to Cloudinary.
+- `POST /api/admin-login` validates admin login credentials.
 
-## Admin Environment
+## Environment
 
 Set these in a local `.env.local` file or your hosting provider environment:
 
 ```bash
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=change_this_password
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+CLOUDINARY_FOLDER=portfolio/project-images
 VITE_ADMIN_EMAIL=admin@example.com
 VITE_ADMIN_PASSWORD=local_dev_only_password
 ```
+
+For Vercel, set the same values in Project Settings > Environment Variables.
+Use `npm run dev:vercel` when testing the `/api` backend locally.
