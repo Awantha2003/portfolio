@@ -34,6 +34,24 @@ export const addAdminProject = (project: Omit<StoredProject, 'id' | 'source' | '
   return nextProject;
 };
 
+export const updateAdminProject = (
+  projectId: number,
+  updates: Omit<StoredProject, 'id' | 'source' | 'createdAt'>,
+) => {
+  const projects = getAdminProjects();
+  const nextProjects = projects.map(project =>
+    project.id === projectId
+      ? {
+          ...project,
+          ...updates
+        }
+      : project
+  );
+
+  saveAdminProjects(nextProjects);
+  return nextProjects.find(project => project.id === projectId);
+};
+
 export const deleteAdminProject = (projectId: number) => {
   saveAdminProjects(getAdminProjects().filter(project => project.id !== projectId));
 };

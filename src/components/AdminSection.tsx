@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { LogOutIcon, SaveIcon, Trash2Icon } from 'lucide-react';
+import { Edit3Icon, LogOutIcon, PlusIcon, SaveIcon, Trash2Icon, XIcon } from 'lucide-react';
 import Button from './ui/Button';
 import ImageUpload, { type UploadedImage } from './ImageUpload';
-import { addAdminProject, deleteAdminProject, getAdminProjects } from '../utils/adminProjects';
+import { addAdminProject, deleteAdminProject, getAdminProjects, updateAdminProject } from '../utils/adminProjects';
 import { getApiError, readApiResponse } from '../utils/api';
 import type { StoredProject } from '../types/project';
 
@@ -29,8 +29,11 @@ const AdminSection: React.FC = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>(['Web Apps']);
   const [uploadedImage, setUploadedImage] = useState<UploadedImage | null>(null);
   const [projects, setProjects] = useState<StoredProject[]>([]);
+  const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
+  const isEditing = editingProjectId !== null;
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -113,9 +116,44 @@ const AdminSection: React.FC = () => {
     );
   };
 
+  const resetForm = () => {
+    setFormData(emptyForm);
+    setSelectedCategories(['Web Apps']);
+    setUploadedImage(null);
+    setEditingProjectId(null);
+    setStatus('idle');
+    setSuccessMessage('');
+    setError('');
+  };
+
+  const handleEdit = (project: StoredProject) => {
+    setEditingProjectId(project.id);
+    setFormData({
+      title: project.title,
+      description: project.description,
+      stack: project.stack.join(', '),
+      liveUrl: project.liveUrl ?? '',
+      githubUrl: project.githubUrl ?? '',
+      FigmaUrl: project.FigmaUrl ?? ''
+    });
+    setSelectedCategories(project.category);
+    setUploadedImage({
+      publicId: project.title,
+      secureUrl: project.image,
+      width: 0,
+      height: 0,
+      format: project.image.split('.').pop() ?? 'image'
+    });
+    setStatus('idle');
+    setSuccessMessage('');
+    setError('');
+    document.getElementById('admin-project-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     setStatus('idle');
+    setSuccessMessage('');
     setError('');
 
     if (!uploadedImage) {
@@ -136,7 +174,7 @@ const AdminSection: React.FC = () => {
       return;
     }
 
-    addAdminProject({
+    const projectPayload = {
       title: formData.title.trim(),
       description: formData.description.trim(),
       image: uploadedImage.secureUrl,
@@ -145,18 +183,31 @@ const AdminSection: React.FC = () => {
       liveUrl: formData.liveUrl.trim() || undefined,
       githubUrl: formData.githubUrl.trim() || undefined,
       FigmaUrl: formData.FigmaUrl.trim() || undefined
-    });
+    };
+
+    if (editingProjectId) {
+      updateAdminProject(editingProjectId, projectPayload);
+      setSuccessMessage('Project updated in the portfolio.');
+    } else {
+      addAdminProject(projectPayload);
+      setSuccessMessage('Project added to the portfolio.');
+    }
 
     setProjects(getAdminProjects());
     setFormData(emptyForm);
     setSelectedCategories(['Web Apps']);
     setUploadedImage(null);
+    setEditingProjectId(null);
     setStatus('success');
   };
 
   const handleDelete = (projectId: number) => {
     deleteAdminProject(projectId);
     setProjects(getAdminProjects());
+
+    if (editingProjectId === projectId) {
+      resetForm();
+    }
   };
 
   return (
@@ -208,8 +259,14 @@ const AdminSection: React.FC = () => {
           </form>
         ) : (
         <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-          <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-gray-800 bg-black/40 p-6">
-            <div className="flex justify-end">
+          <form id="admin-project-form" onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-gray-800 bg-black/40 p-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-bold">{isEditing ? 'Update Project' : 'Add Project'}</h3>
+                <p className="text-sm text-gray-500">
+                  {isEditing ? 'Edit details, links, categories, or replace the image.' : 'Create a project that appears on the homepage.'}
+                </p>
+              </div>
               <Button type="button" variant="secondary" className="px-4 py-2" onClick={handleLogout}>
                 <LogOutIcon size={16} />
                 Logout
@@ -314,10 +371,14 @@ const AdminSection: React.FC = () => {
 
             <div className="flex flex-wrap items-center gap-4">
               <Button type="submit" className="px-8 py-3">
-                <SaveIcon size={16} />
-                Save Project
+                {isEditing ? <SaveIcon size={16} /> : <PlusIcon size={16} />}
+                {isEditing ? 'Update Project' : 'Save Project'}
               </Button>
-              {status === 'success' && <p className="text-sm text-green-500">Project added to the portfolio.</p>}
+              {isEditing && <Button type="button" variant="secondary" className="px-4 py-3" onClick={resetForm}>
+                <XIcon size={16} />
+                Cancel Edit
+              </Button>}
+              {status === 'success' && <p className="text-sm text-green-500">{successMessage}</p>}
               {status === 'success' && <a href="/#projects" className="text-sm font-medium text-orange-400 hover:text-orange-300">
                 View on homepage
               </a>}
@@ -338,6 +399,14 @@ const AdminSection: React.FC = () => {
                       <p className="truncate font-medium text-gray-100">{project.title}</p>
                       <p className="truncate text-xs text-gray-500">{project.category.join(', ')}</p>
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => handleEdit(project)}
+                      className="rounded-md p-2 text-gray-500 transition-colors hover:bg-orange-500/10 hover:text-orange-400"
+                      aria-label={`Edit ${project.title}`}
+                    >
+                      <Edit3Icon size={16} />
+                    </button>
                     <button
                       type="button"
                       onClick={() => handleDelete(project.id)}

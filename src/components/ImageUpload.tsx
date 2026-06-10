@@ -91,9 +91,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange }) => {
           />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm text-gray-200">{value.publicId}</p>
-            <p className="text-xs text-gray-500">
+            {value.width > 0 && value.height > 0 && <p className="text-xs text-gray-500">
               {value.width} x {value.height} {value.format.toUpperCase()}
-            </p>
+            </p>}
           </div>
           <Button type="button" variant="secondary" className="px-4 py-2" onClick={() => onChange(null)}>
             <X size={16} />
