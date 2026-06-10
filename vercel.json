@@ -21,7 +21,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!api/).*)",
+      "source": "/((?!api/|google.*\\.html$|robots\\.txt$|sitemap\\.xml$|llms\\.txt$|site\\.webmanifest$|.*\\.(?:jpg|jpeg|png|mp4|css|js|ico)$).*)",
       "destination": "/index.html"
     }
   ]
