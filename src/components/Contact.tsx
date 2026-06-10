@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import Button from './ui/Button';
 import { SendIcon } from 'lucide-react';
-import ImageUpload from './ImageUpload';
-
-interface UploadedImage {
-  publicId: string;
-  secureUrl: string;
-  width: number;
-  height: number;
-  format: string;
-}
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -18,7 +9,6 @@ const Contact: React.FC = () => {
     message: ''
   });
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
-  const [uploadedImage, setUploadedImage] = useState<UploadedImage | null>(null);
   const [formError, setFormError] = useState('');
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {
@@ -36,33 +26,24 @@ const Contact: React.FC = () => {
     setFormError('');
 
     try {
-      const response = await fetch('/.netlify/functions/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...formData,
-          imageUrl: uploadedImage?.secureUrl
-        })
-      });
-      const result = await response.json();
+      const mailtoUrl = new URL('mailto:awanthaimesh65@gmail.com');
+      mailtoUrl.searchParams.set('subject', `Portfolio message from ${formData.name}`);
+      mailtoUrl.searchParams.set(
+        'body',
+        `Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`
+      );
 
-      if (!response.ok) {
-        throw new Error(result.error ?? 'Message submission failed');
-      }
-
+      window.location.href = mailtoUrl.toString();
       setFormStatus('success');
       setFormData({
         name: '',
         email: '',
         message: ''
       });
-      setUploadedImage(null);
       setTimeout(() => setFormStatus('idle'), 3000);
     } catch (error) {
       setFormStatus('error');
-      setFormError(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
+      setFormError(error instanceof Error ? error.message : 'Could not open your email app. Please email me directly.');
     }
   };
   return <section id="contact" className="py-24 bg-black relative">
@@ -96,7 +77,6 @@ const Contact: React.FC = () => {
               </label>
               <textarea id="message" name="message" value={formData.message} onChange={handleChange} required rows={6} className="w-full px-4 py-3 bg-gray-900/50 border border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 transition-all" placeholder="Tell me about your project..." />
             </div>
-            <ImageUpload value={uploadedImage} onChange={setUploadedImage} />
             <div className="flex justify-center">
               <Button type="submit" className="px-8 py-3" disabled={formStatus === 'submitting'}>
                 {formStatus === 'submitting' ? <span className="flex items-center">

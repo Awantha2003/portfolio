@@ -23,6 +23,14 @@ const fileToDataUrl = (file: File) =>
     reader.readAsDataURL(file);
   });
 
+const getImageSize = (src: string) =>
+  new Promise<{ width: number; height: number }>((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve({ width: image.naturalWidth, height: image.naturalHeight });
+    image.onerror = () => reject(new Error('Could not load image preview'));
+    image.src = src;
+  });
+
 const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<'idle' | 'uploading' | 'error'>('idle');
@@ -52,25 +60,21 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange }) => {
     setStatus('uploading');
 
     try {
-      const image = await fileToDataUrl(file);
-      const response = await fetch('/.netlify/functions/upload-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ image })
+      const secureUrl = await fileToDataUrl(file);
+      const { width, height } = await getImageSize(secureUrl);
+      const format = file.type.split('/')[1] ?? 'image';
+
+      onChange({
+        publicId: file.name,
+        secureUrl,
+        width,
+        height,
+        format
       });
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error ?? 'Image upload failed');
-      }
-
-      onChange(result);
       setStatus('idle');
     } catch (uploadError) {
       setStatus('error');
-      setError(uploadError instanceof Error ? uploadError.message : 'Image upload failed');
+      setError(uploadError instanceof Error ? uploadError.message : 'Image preview failed');
     } finally {
       event.target.value = '';
     }
@@ -119,7 +123,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange }) => {
             {status === 'uploading' ? <Loader2 size={16} className="animate-spin" /> : <ImagePlus size={16} />}
             {status === 'uploading' ? 'Uploading...' : 'Upload Image'}
           </Button>
-          <p className="mt-3 text-sm text-gray-500">PNG, JPG, WebP, or GIF up to 6 MB.</p>
+          <p className="mt-3 text-sm text-gray-500">PNG, JPG, WebP, or GIF up to 6 MB. Images are saved in this browser.</p>
         </div>
       )}
       {status === 'error' && <p className="mt-2 text-sm text-red-500">{error}</p>}

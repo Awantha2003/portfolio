@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "npx vite",
-    "dev:netlify": "npx netlify-cli dev",
     "build": "npx vite build",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "preview": "npx vite preview"
