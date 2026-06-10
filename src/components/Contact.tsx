@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Button from './ui/Button';
 import { SendIcon } from 'lucide-react';
+import { getApiError, readApiResponse } from '../utils/api';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -33,10 +34,10 @@ const Contact: React.FC = () => {
         },
         body: JSON.stringify(formData)
       });
-      const result = await response.json();
+      const result = await readApiResponse(response);
 
       if (!response.ok) {
-        throw new Error(result.error ?? 'Message submission failed');
+        throw new Error(getApiError(result, 'Message submission failed'));
       }
 
       setFormStatus('success');

@@ -3,6 +3,7 @@ import { LogOutIcon, SaveIcon, Trash2Icon } from 'lucide-react';
 import Button from './ui/Button';
 import ImageUpload, { type UploadedImage } from './ImageUpload';
 import { addAdminProject, deleteAdminProject, getAdminProjects } from '../utils/adminProjects';
+import { getApiError, readApiResponse } from '../utils/api';
 import type { StoredProject } from '../types/project';
 
 const categories = ['Web Apps', 'UI/UX', 'Mobile', 'Clients'];
@@ -75,10 +76,10 @@ const AdminSection: React.FC = () => {
         },
         body: JSON.stringify(loginData)
       });
-      const result = await response.json();
+      const result = await readApiResponse(response);
 
       if (!response.ok) {
-        throw new Error(result.error ?? 'Admin login failed');
+        throw new Error(getApiError(result, 'Admin login failed'));
       }
 
       window.sessionStorage.setItem('portfolio-admin-auth', 'true');

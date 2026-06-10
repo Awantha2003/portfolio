@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { ImagePlus, Loader2, X } from 'lucide-react';
 import Button from './ui/Button';
+import { getApiError, readApiResponse } from '../utils/api';
 
 export interface UploadedImage {
   publicId: string;
@@ -43,9 +44,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange }) => {
       return;
     }
 
-    if (file.size > 3 * 1024 * 1024) {
+    if (file.size > 1024 * 1024) {
       setStatus('error');
-      setError('Please choose an image smaller than 3 MB.');
+      setError('Please choose an image smaller than 1 MB.');
       return;
     }
 
@@ -60,13 +61,13 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange }) => {
         },
         body: JSON.stringify({ image })
       });
-      const result = await response.json();
+      const result = await readApiResponse(response);
 
       if (!response.ok) {
-        throw new Error(result.error ?? 'Image upload failed');
+        throw new Error(getApiError(result, 'Image upload failed'));
       }
 
-      onChange(result);
+      onChange(result as unknown as UploadedImage);
       setStatus('idle');
     } catch (uploadError) {
       setStatus('error');
@@ -119,7 +120,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange }) => {
             {status === 'uploading' ? <Loader2 size={16} className="animate-spin" /> : <ImagePlus size={16} />}
             {status === 'uploading' ? 'Uploading...' : 'Upload Image'}
           </Button>
-          <p className="mt-3 text-sm text-gray-500">PNG, JPG, WebP, or GIF up to 3 MB.</p>
+          <p className="mt-3 text-sm text-gray-500">PNG, JPG, WebP, or GIF up to 1 MB.</p>
         </div>
       )}
       {status === 'error' && <p className="mt-2 text-sm text-red-500">{error}</p>}
