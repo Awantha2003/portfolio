@@ -318,6 +318,9 @@ const AdminSection: React.FC = () => {
                 Save Project
               </Button>
               {status === 'success' && <p className="text-sm text-green-500">Project added to the portfolio.</p>}
+              {status === 'success' && <a href="/#projects" className="text-sm font-medium text-orange-400 hover:text-orange-300">
+                View on homepage
+              </a>}
               {status === 'error' && <p className="text-sm text-red-500">{error}</p>}
             </div>
           </form>

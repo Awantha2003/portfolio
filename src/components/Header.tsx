@@ -9,6 +9,8 @@ const Header: React.FC<HeaderProps> = ({
   const [darkMode, setDarkMode] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [toggleHover, setToggleHover] = useState(false);
+  const isAdminPage = window.location.pathname === '/admin';
+  const getNavHref = (hash: string) => (isAdminPage ? `/${hash}` : hash);
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
@@ -33,14 +35,14 @@ const Header: React.FC<HeaderProps> = ({
   }];
   return <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrollY > 50 ? 'bg-black/60 backdrop-blur-md py-3' : 'bg-transparent py-5'}`}>
       <div className="container mx-auto px-4 flex justify-between items-center">
-        <a href="#home" className="flex items-center">
+        <a href={getNavHref('#home')} className="flex items-center">
           <span className="text-2xl font-bold tracking-tighter">
             AWANTHA<span className="text-orange-500">.</span>
           </span>
         </a>
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          {navItems.map(item => <a key={item.name} href={item.href} className="relative text-sm font-medium tracking-wide hover:text-orange-500 transition-colors duration-300 group">
+          {navItems.map(item => <a key={item.name} href={getNavHref(item.href)} className="relative text-sm font-medium tracking-wide hover:text-orange-500 transition-colors duration-300 group">
               {item.name}
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
             </a>)}
@@ -67,7 +69,7 @@ const Header: React.FC<HeaderProps> = ({
       {/* Mobile Navigation */}
       {menuOpen && <div className="md:hidden bg-black/90 backdrop-blur-md absolute top-full left-0 w-full">
           <nav className="container mx-auto px-4 py-4 flex flex-col space-y-4">
-            {navItems.map(item => <a key={item.name} href={item.href} className="text-sm font-medium py-2 border-b border-gray-800 hover:text-orange-500 transition-colors" onClick={() => setMenuOpen(false)}>
+            {navItems.map(item => <a key={item.name} href={getNavHref(item.href)} className="text-sm font-medium py-2 border-b border-gray-800 hover:text-orange-500 transition-colors" onClick={() => setMenuOpen(false)}>
                 {item.name}
               </a>)}
           </nav>
