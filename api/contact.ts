@@ -1,15 +1,6 @@
-type ApiRequest = {
-  method?: string;
-  body?: Record<string, unknown>;
-};
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-type ApiResponse = {
-  status: (statusCode: number) => {
-    json: (body: unknown) => void;
-  };
-};
-
-export default function handler(request: ApiRequest, response: ApiResponse) {
+export default function handler(request: VercelRequest, response: VercelResponse) {
   if (request.method !== 'POST') {
     response.status(405).json({ error: 'Method not allowed' });
     return;

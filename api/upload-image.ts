@@ -1,15 +1,5 @@
 import crypto from 'node:crypto';
-
-type ApiRequest = {
-  method?: string;
-  body?: Record<string, unknown>;
-};
-
-type ApiResponse = {
-  status: (statusCode: number) => {
-    json: (body: unknown) => void;
-  };
-};
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const signUpload = (params: Record<string, string>, apiSecret: string) => {
   const payload = Object.entries(params)
@@ -20,7 +10,7 @@ const signUpload = (params: Record<string, string>, apiSecret: string) => {
   return crypto.createHash('sha1').update(`${payload}${apiSecret}`).digest('hex');
 };
 
-export default async function handler(request: ApiRequest, response: ApiResponse) {
+export default async function handler(request: VercelRequest, response: VercelResponse) {
   if (request.method !== 'POST') {
     response.status(405).json({ error: 'Method not allowed' });
     return;
