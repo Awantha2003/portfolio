@@ -38,3 +38,5 @@ VITE_ADMIN_PASSWORD=local_dev_only_password
 
 For Vercel, set the same values in Project Settings > Environment Variables.
 Use `npm run dev:vercel` when testing the `/api` backend locally.
+
+The Vercel SPA rewrite excludes `/api/*` so serverless functions can handle backend requests.

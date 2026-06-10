@@ -79,7 +79,12 @@ const AdminSection: React.FC = () => {
       const result = await readApiResponse(response);
 
       if (!response.ok) {
-        throw new Error(getApiError(result, 'Admin login failed'));
+        throw new Error(
+          getApiError(
+            result,
+            `Admin login API returned ${response.status}. Check the Vercel deployment and admin environment variables.`
+          )
+        );
       }
 
       window.sessionStorage.setItem('portfolio-admin-auth', 'true');

@@ -37,7 +37,7 @@ const Contact: React.FC = () => {
       const result = await readApiResponse(response);
 
       if (!response.ok) {
-        throw new Error(getApiError(result, 'Message submission failed'));
+        throw new Error(getApiError(result, `Contact API returned ${response.status}`));
       }
 
       setFormStatus('success');

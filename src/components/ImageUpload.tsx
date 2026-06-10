@@ -64,7 +64,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange }) => {
       const result = await readApiResponse(response);
 
       if (!response.ok) {
-        throw new Error(getApiError(result, 'Image upload failed'));
+        throw new Error(getApiError(result, `Image upload API returned ${response.status}`));
       }
 
       onChange(result as unknown as UploadedImage);
