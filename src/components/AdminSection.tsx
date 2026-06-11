@@ -4,6 +4,7 @@ import Button from './ui/Button';
 import ImageUpload, { type UploadedImage } from './ImageUpload';
 import { addAdminProject, deleteAdminProject, getAdminProjects, updateAdminProject } from '../utils/adminProjects';
 import { getApiError, readApiResponse } from '../utils/api';
+import { getDisplayImageUrl } from '../utils/cloudinaryImage';
 import type { StoredProject } from '../types/project';
 
 const categories = ['Web Apps', 'UI/UX', 'Mobile', 'Clients'];
@@ -394,7 +395,7 @@ const AdminSection: React.FC = () => {
               ) : (
                 projects.map(project => (
                   <div key={project.id} className="flex gap-4 rounded-lg border border-gray-800 bg-gray-900/40 p-3">
-                    <img src={project.image} alt={project.title} className="h-16 w-16 rounded-md object-cover" />
+                    <img src={getDisplayImageUrl(project.image)} alt={project.title} className="h-16 w-16 rounded-md object-cover" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium text-gray-100">{project.title}</p>
                       <p className="truncate text-xs text-gray-500">{project.category.join(', ')}</p>

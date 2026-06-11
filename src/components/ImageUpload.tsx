@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { ImagePlus, Loader2, X } from 'lucide-react';
 import Button from './ui/Button';
 import { getApiError, readApiResponse } from '../utils/api';
+import { getDisplayImageUrl } from '../utils/cloudinaryImage';
 
 export interface UploadedImage {
   publicId: string;
@@ -88,7 +89,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange }) => {
       {value ? (
         <div className="flex flex-col gap-4 rounded-lg border border-gray-800 bg-gray-900/50 p-4 sm:flex-row sm:items-center">
           <img
-            src={value.secureUrl}
+            src={getDisplayImageUrl(value.secureUrl)}
             alt="Uploaded project preview"
             className="h-24 w-24 rounded-md object-cover"
           />

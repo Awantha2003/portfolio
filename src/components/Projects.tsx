@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { ExternalLinkIcon, GithubIcon } from 'lucide-react';
 import type { Project } from '../types/project';
 import { ADMIN_PROJECTS_EVENT, getAdminProjects } from '../utils/adminProjects';
+import { getDisplayImageUrl } from '../utils/cloudinaryImage';
 
 const Projects: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState('All');
@@ -131,7 +132,7 @@ const Projects: React.FC = () => {
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:translate-y-2"
                   />
                 ) : (
-                  <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:translate-y-2" />
+                  <img src={getDisplayImageUrl(project.image)} alt={project.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:translate-y-2" />
                 )}
                 {/* Hover overlay with animation */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
