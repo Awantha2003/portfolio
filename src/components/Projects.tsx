@@ -33,7 +33,9 @@ const Projects: React.FC = () => {
 
   useEffect(() => {
     const syncAdminProjects = () => {
-      setAdminProjects(getAdminProjects());
+      getAdminProjects()
+        .then(setAdminProjects)
+        .catch(() => setAdminProjects([]));
     };
 
     syncAdminProjects();

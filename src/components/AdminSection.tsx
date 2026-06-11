@@ -2,7 +2,15 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Edit3Icon, LogOutIcon, PlusIcon, SaveIcon, Trash2Icon, XIcon } from 'lucide-react';
 import Button from './ui/Button';
 import ImageUpload, { type UploadedImage } from './ImageUpload';
-import { addAdminProject, deleteAdminProject, getAdminProjects, updateAdminProject } from '../utils/adminProjects';
+import {
+  addAdminProject,
+  ADMIN_TOKEN_KEY,
+  clearLegacyAdminProjects,
+  getAdminProjects,
+  getLegacyAdminProjects,
+  updateAdminProject,
+  deleteAdminProject
+} from '../utils/adminProjects';
 import { getApiError, readApiResponse } from '../utils/api';
 import { getDisplayImageUrl } from '../utils/cloudinaryImage';
 import type { StoredProject } from '../types/project';
@@ -19,7 +27,10 @@ const emptyForm = {
 };
 
 const AdminSection: React.FC = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(() => window.sessionStorage.getItem('portfolio-admin-auth') === 'true');
+  const [isLoggedIn, setIsLoggedIn] = useState(() =>
+    window.sessionStorage.getItem('portfolio-admin-auth') === 'true' &&
+    Boolean(window.sessionStorage.getItem(ADMIN_TOKEN_KEY))
+  );
   const [loginData, setLoginData] = useState({
     email: '',
     password: ''
@@ -36,9 +47,18 @@ const AdminSection: React.FC = () => {
   const [error, setError] = useState('');
   const isEditing = editingProjectId !== null;
 
+  const refreshProjects = async () => {
+    try {
+      setProjects(await getAdminProjects());
+    } catch (projectError) {
+      setStatus('error');
+      setError(projectError instanceof Error ? projectError.message : 'Could not load projects');
+    }
+  };
+
   useEffect(() => {
     if (isLoggedIn) {
-      setProjects(getAdminProjects());
+      void refreshProjects();
     }
   }, [isLoggedIn]);
 
@@ -91,13 +111,38 @@ const AdminSection: React.FC = () => {
         );
       }
 
+      const token = typeof result.token === 'string' ? result.token : '';
+
+      if (!token) {
+        throw new Error('Admin login did not return an authorization token');
+      }
+
       window.sessionStorage.setItem('portfolio-admin-auth', 'true');
+      window.sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
       setIsLoggedIn(true);
       setLoginData({
         email: '',
         password: ''
       });
       setLoginStatus('idle');
+
+      const legacyProjects = getLegacyAdminProjects();
+
+      if (legacyProjects.length > 0) {
+        await Promise.all(legacyProjects.map(project => addAdminProject({
+          title: project.title,
+          description: project.description,
+          image: project.image,
+          category: project.category,
+          stack: project.stack,
+          liveUrl: project.liveUrl,
+          githubUrl: project.githubUrl,
+          FigmaUrl: project.FigmaUrl
+        })));
+        clearLegacyAdminProjects();
+      }
+
+      await refreshProjects();
     } catch (error) {
       setLoginStatus('error');
       setLoginError(error instanceof Error ? error.message : 'Admin login failed');
@@ -106,6 +151,7 @@ const AdminSection: React.FC = () => {
 
   const handleLogout = () => {
     window.sessionStorage.removeItem('portfolio-admin-auth');
+    window.sessionStorage.removeItem(ADMIN_TOKEN_KEY);
     setIsLoggedIn(false);
   };
 
@@ -151,7 +197,7 @@ const AdminSection: React.FC = () => {
     document.getElementById('admin-project-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setStatus('idle');
     setSuccessMessage('');
@@ -186,28 +232,38 @@ const AdminSection: React.FC = () => {
       FigmaUrl: formData.FigmaUrl.trim() || undefined
     };
 
-    if (editingProjectId) {
-      updateAdminProject(editingProjectId, projectPayload);
-      setSuccessMessage('Project updated in the portfolio.');
-    } else {
-      addAdminProject(projectPayload);
-      setSuccessMessage('Project added to the portfolio.');
-    }
+    try {
+      if (editingProjectId) {
+        await updateAdminProject(editingProjectId, projectPayload);
+        setSuccessMessage('Project updated in the portfolio.');
+      } else {
+        await addAdminProject(projectPayload);
+        setSuccessMessage('Project added to the portfolio.');
+      }
 
-    setProjects(getAdminProjects());
-    setFormData(emptyForm);
-    setSelectedCategories(['Web Apps']);
-    setUploadedImage(null);
-    setEditingProjectId(null);
-    setStatus('success');
+      await refreshProjects();
+      setFormData(emptyForm);
+      setSelectedCategories(['Web Apps']);
+      setUploadedImage(null);
+      setEditingProjectId(null);
+      setStatus('success');
+    } catch (projectError) {
+      setStatus('error');
+      setError(projectError instanceof Error ? projectError.message : 'Could not save project');
+    }
   };
 
-  const handleDelete = (projectId: number) => {
-    deleteAdminProject(projectId);
-    setProjects(getAdminProjects());
+  const handleDelete = async (projectId: number) => {
+    try {
+      await deleteAdminProject(projectId);
+      await refreshProjects();
 
-    if (editingProjectId === projectId) {
-      resetForm();
+      if (editingProjectId === projectId) {
+        resetForm();
+      }
+    } catch (projectError) {
+      setStatus('error');
+      setError(projectError instanceof Error ? projectError.message : 'Could not delete project');
     }
   };
 
