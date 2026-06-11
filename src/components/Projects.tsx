@@ -68,7 +68,9 @@ const Projects: React.FC = () => {
     githubUrl: '#'
   },];
 
-  const projects = [...adminProjects, ...defaultProjects];
+  const projects = [...adminProjects, ...defaultProjects].sort((firstProject, secondProject) =>
+    Number(Boolean(secondProject.pinned)) - Number(Boolean(firstProject.pinned))
+  );
 
   const categories = ['All', 'Web Apps', 'UI/UX', 'Mobile', 'Clients'];
   const filteredProjects = activeCategory === 'All' ? projects : projects.filter(project => project.category.includes(activeCategory));

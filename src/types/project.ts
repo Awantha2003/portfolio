@@ -8,6 +8,7 @@ export interface Project {
   liveUrl?: string;
   githubUrl?: string;
   FigmaUrl?: string;
+  pinned?: boolean;
 }
 
 export type StoredProject = Project & {

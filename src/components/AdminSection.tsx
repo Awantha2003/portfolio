@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Edit3Icon, LogOutIcon, PlusIcon, SaveIcon, Trash2Icon, XIcon } from 'lucide-react';
+import { Edit3Icon, LogOutIcon, PinIcon, PlusIcon, SaveIcon, StarIcon, Trash2Icon, XIcon } from 'lucide-react';
 import Button from './ui/Button';
 import ImageUpload, { type UploadedImage } from './ImageUpload';
 import {
@@ -9,11 +9,14 @@ import {
   getAdminProjects,
   getLegacyAdminProjects,
   updateAdminProject,
-  deleteAdminProject
+  deleteAdminProject,
+  deleteAllAdminProjects
 } from '../utils/adminProjects';
 import { getApiError, readApiResponse } from '../utils/api';
 import { getDisplayImageUrl } from '../utils/cloudinaryImage';
 import type { StoredProject } from '../types/project';
+import type { ResumeContent } from '../types/resumeContent';
+import { getAdminResumeContent, saveAdminResumeContent } from '../utils/adminResume';
 
 const categories = ['Web Apps', 'UI/UX', 'Mobile', 'Clients'];
 
@@ -23,8 +26,56 @@ const emptyForm = {
   stack: '',
   liveUrl: '',
   githubUrl: '',
-  FigmaUrl: ''
+  FigmaUrl: '',
+  pinned: false
 };
+
+const defaultResumeText = {
+  resumeUrl: 'https://drive.google.com/file/d/1OTrqNG6cXWZkoXwahXFOjmVy68eg6Kqg/view?pli=1',
+  education: "Bachelor's Degree in Software Engineering | Sri Lanka Institute of Information Technology (SLIIT) | 2021 - Present | Undergraduate",
+  experience: [
+    'Full Stack Developer | Mobile App Development | 2025 - Present | Leading development of enterprise web applications with React and MERN stack',
+    'UI/UX Engineer | Figma and Adobe XD | 2025 | Designed and implemented user interfaces for mobile and web applications',
+    'Frontend Developer | React and React Native | 2025 | Developed responsive web applications using React and modern JavaScript'
+  ].join('\n'),
+  keySkills: 'React, Node.js, Java, Spring Boot, MongoDB, MySQL, TailwindCSS, Figma, Git, Docker, TypeScript, React Native',
+  certifications: [
+    'Machine Learning Operations (MLOps) for Generative AI | Google Cloud Skills Boost | 2024 | https://www.cloudskillsboost.google/public_profiles/0781d0ff-b1f8-469c-9590-caa6429ca24f/badges/13505552?utm_medium=social&utm_source=linkedin&utm_campaign=ql-social-share',
+    'Introduction to Generative AI | Google Cloud Skills Boost | 2024',
+    'Microsoft Azure Fundamentals | Microsoft | 2024 | https://learn.microsoft.com/en-gb/users/awanthaimesh-3164/achievements/uxs9zf63?ref=https%3A%2F%2Fwww.linkedin.com%2F',
+    'Full Stack Web Development | React, Node.js, MongoDB | 2024',
+    'UI/UX Design | Figma, Adobe XD | 2024',
+    'Mobile App Development | React Native, Kotlin | 2024'
+  ].join('\n')
+};
+
+const toRows = (text: string) => text.split('\n').map(row => row.trim()).filter(Boolean);
+const splitPipe = (row: string) => row.split('|').map(item => item.trim());
+
+const resumeToText = (resume: ResumeContent) => ({
+  resumeUrl: resume.resumeUrl ?? '',
+  education: resume.education.map(item => [item.degree, item.institution, item.period, item.status].join(' | ')).join('\n'),
+  experience: resume.experience.map(item => [item.position, item.company, item.period, item.description].join(' | ')).join('\n'),
+  keySkills: resume.keySkills.join(', '),
+  certifications: resume.certifications.map(item => [item.name, item.issuer, item.year, item.url ?? ''].filter(Boolean).join(' | ')).join('\n')
+});
+
+const textToResume = (text: typeof defaultResumeText): ResumeContent => ({
+  resumeUrl: text.resumeUrl.trim() || undefined,
+  education: toRows(text.education).map(row => {
+    const [degree = '', institution = '', period = '', status = ''] = splitPipe(row);
+    return { degree, institution, period, status };
+  }).filter(item => item.degree && item.institution),
+  experience: toRows(text.experience).map(row => {
+    const [position = '', company = '', period = '', description = ''] = splitPipe(row);
+    return { position, company, period, description };
+  }).filter(item => item.position && item.company),
+  keySkills: text.keySkills.split(/,|\n/).map(item => item.trim()).filter(Boolean),
+  certifications: toRows(text.certifications).map(row => {
+    const [name = '', issuer = '', year = '', url = ''] = splitPipe(row);
+    return { name, issuer, year, ...(url ? { url } : {}) };
+  }).filter(item => item.name && item.issuer)
+});
 
 const AdminSection: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(() =>
@@ -42,6 +93,9 @@ const AdminSection: React.FC = () => {
   const [uploadedImage, setUploadedImage] = useState<UploadedImage | null>(null);
   const [projects, setProjects] = useState<StoredProject[]>([]);
   const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
+  const [resumeText, setResumeText] = useState(defaultResumeText);
+  const [resumeStatus, setResumeStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [resumeMessage, setResumeMessage] = useState('');
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
@@ -56,9 +110,22 @@ const AdminSection: React.FC = () => {
     }
   };
 
+  const refreshResume = async () => {
+    try {
+      const resume = await getAdminResumeContent();
+
+      if (resume) {
+        setResumeText(resumeToText(resume));
+      }
+    } catch {
+      setResumeText(defaultResumeText);
+    }
+  };
+
   useEffect(() => {
     if (isLoggedIn) {
       void refreshProjects();
+      void refreshResume();
     }
   }, [isLoggedIn]);
 
@@ -72,8 +139,24 @@ const AdminSection: React.FC = () => {
   );
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = event.target;
+    const { name, value, type } = event.target;
     setFormData(previous => ({
+      ...previous,
+      [name]: type === 'checkbox' && event.target instanceof HTMLInputElement ? event.target.checked : value
+    }));
+  };
+
+  const handleResumeTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    setResumeText(previous => ({
+      ...previous,
+      [name]: value
+    }));
+  };
+
+  const handleResumeInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setResumeText(previous => ({
       ...previous,
       [name]: value
     }));
@@ -181,7 +264,8 @@ const AdminSection: React.FC = () => {
       stack: project.stack.join(', '),
       liveUrl: project.liveUrl ?? '',
       githubUrl: project.githubUrl ?? '',
-      FigmaUrl: project.FigmaUrl ?? ''
+      FigmaUrl: project.FigmaUrl ?? '',
+      pinned: Boolean(project.pinned)
     });
     setSelectedCategories(project.category);
     setUploadedImage({
@@ -229,7 +313,8 @@ const AdminSection: React.FC = () => {
       stack: stackItems,
       liveUrl: formData.liveUrl.trim() || undefined,
       githubUrl: formData.githubUrl.trim() || undefined,
-      FigmaUrl: formData.FigmaUrl.trim() || undefined
+      FigmaUrl: formData.FigmaUrl.trim() || undefined,
+      pinned: formData.pinned
     };
 
     try {
@@ -253,6 +338,44 @@ const AdminSection: React.FC = () => {
     }
   };
 
+  const handleResumeSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setResumeStatus('idle');
+    setResumeMessage('');
+
+    try {
+      const savedResume = await saveAdminResumeContent(textToResume(resumeText));
+      setResumeText(resumeToText(savedResume));
+      setResumeStatus('success');
+      setResumeMessage('Resume sections updated on the portfolio.');
+    } catch (resumeError) {
+      setResumeStatus('error');
+      setResumeMessage(resumeError instanceof Error ? resumeError.message : 'Could not save resume sections');
+    }
+  };
+
+  const handleClearResume = async () => {
+    const emptyResumeText = {
+      resumeUrl: '',
+      education: '',
+      experience: '',
+      keySkills: '',
+      certifications: ''
+    };
+    setResumeText(emptyResumeText);
+    setResumeStatus('idle');
+    setResumeMessage('');
+
+    try {
+      await saveAdminResumeContent(textToResume(emptyResumeText));
+      setResumeStatus('success');
+      setResumeMessage('Resume sections cleared from the portfolio.');
+    } catch (resumeError) {
+      setResumeStatus('error');
+      setResumeMessage(resumeError instanceof Error ? resumeError.message : 'Could not clear resume sections');
+    }
+  };
+
   const handleDelete = async (projectId: number) => {
     try {
       await deleteAdminProject(projectId);
@@ -264,6 +387,17 @@ const AdminSection: React.FC = () => {
     } catch (projectError) {
       setStatus('error');
       setError(projectError instanceof Error ? projectError.message : 'Could not delete project');
+    }
+  };
+
+  const handleDeleteAllProjects = async () => {
+    try {
+      await deleteAllAdminProjects();
+      await refreshProjects();
+      resetForm();
+    } catch (projectError) {
+      setStatus('error');
+      setError(projectError instanceof Error ? projectError.message : 'Could not delete all projects');
     }
   };
 
@@ -315,6 +449,7 @@ const AdminSection: React.FC = () => {
             {loginStatus === 'error' && <p className="text-center text-sm text-red-500">{loginError}</p>}
           </form>
         ) : (
+        <div className="space-y-8">
         <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
           <form id="admin-project-form" onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-gray-800 bg-black/40 p-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
@@ -400,6 +535,20 @@ const AdminSection: React.FC = () => {
               </div>
             </div>
 
+            <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-800 bg-gray-900/40 p-4 text-sm text-gray-300 transition-colors hover:border-orange-500/50">
+              <input
+                type="checkbox"
+                name="pinned"
+                checked={formData.pinned}
+                onChange={handleChange}
+                className="h-4 w-4 rounded border-gray-700 bg-black text-orange-500 focus:ring-orange-500"
+              />
+              <span className="flex items-center gap-2">
+                <PinIcon size={16} className="text-orange-500" />
+                Pin this project first on the homepage
+              </span>
+            </label>
+
             <ImageUpload value={uploadedImage} onChange={setUploadedImage} />
 
             <div className="grid gap-6 md:grid-cols-3">
@@ -444,7 +593,12 @@ const AdminSection: React.FC = () => {
           </form>
 
           <div className="rounded-xl border border-gray-800 bg-black/40 p-6">
-            <h3 className="mb-4 text-xl font-bold">Uploaded Projects</h3>
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <h3 className="text-xl font-bold">Uploaded Projects</h3>
+              {projects.length > 0 && <button type="button" onClick={handleDeleteAllProjects} className="rounded-full border border-red-500/30 px-4 py-2 text-xs font-semibold text-red-400 transition-colors hover:bg-red-500/10">
+                Delete All
+              </button>}
+            </div>
             <div className="space-y-4">
               {projects.length === 0 ? (
                 <p className="text-sm text-gray-500">No admin projects uploaded yet.</p>
@@ -453,7 +607,10 @@ const AdminSection: React.FC = () => {
                   <div key={project.id} className="flex gap-4 rounded-lg border border-gray-800 bg-gray-900/40 p-3">
                     <img src={getDisplayImageUrl(project.image)} alt={project.title} className="h-16 w-16 rounded-md object-cover" />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium text-gray-100">{project.title}</p>
+                      <p className="truncate font-medium text-gray-100">
+                        {project.pinned && <StarIcon size={14} className="mr-1 inline text-orange-500" />}
+                        {project.title}
+                      </p>
                       <p className="truncate text-xs text-gray-500">{project.category.join(', ')}</p>
                     </div>
                     <button
@@ -477,6 +634,69 @@ const AdminSection: React.FC = () => {
               )}
             </div>
           </div>
+        </div>
+
+          <form onSubmit={handleResumeSubmit} className="space-y-6 rounded-xl border border-gray-800 bg-black/40 p-6">
+            <div>
+              <h3 className="text-xl font-bold">Resume Sections</h3>
+              <p className="text-sm text-gray-500">
+                Add one item per line. Use this format: title | place | period | details.
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor="resume-url" className="mb-2 block text-sm font-medium text-gray-400">
+                My Resume Link
+              </label>
+              <input
+                id="resume-url"
+                name="resumeUrl"
+                value={resumeText.resumeUrl}
+                onChange={handleResumeInputChange}
+                className="w-full rounded-lg border border-gray-800 bg-gray-900/50 px-4 py-3 text-sm focus:border-orange-500/50 focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                placeholder="https://drive.google.com/file/d/..."
+              />
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-2">
+              <div>
+                <label htmlFor="resume-education" className="mb-2 block text-sm font-medium text-gray-400">
+                  Education
+                </label>
+                <textarea id="resume-education" name="education" value={resumeText.education} onChange={handleResumeTextChange} rows={5} className="w-full rounded-lg border border-gray-800 bg-gray-900/50 px-4 py-3 text-sm focus:border-orange-500/50 focus:outline-none focus:ring-2 focus:ring-orange-500/50" />
+              </div>
+              <div>
+                <label htmlFor="resume-experience" className="mb-2 block text-sm font-medium text-gray-400">
+                  Experience
+                </label>
+                <textarea id="resume-experience" name="experience" value={resumeText.experience} onChange={handleResumeTextChange} rows={5} className="w-full rounded-lg border border-gray-800 bg-gray-900/50 px-4 py-3 text-sm focus:border-orange-500/50 focus:outline-none focus:ring-2 focus:ring-orange-500/50" />
+              </div>
+              <div>
+                <label htmlFor="resume-skills" className="mb-2 block text-sm font-medium text-gray-400">
+                  Key Skills
+                </label>
+                <textarea id="resume-skills" name="keySkills" value={resumeText.keySkills} onChange={handleResumeTextChange} rows={5} className="w-full rounded-lg border border-gray-800 bg-gray-900/50 px-4 py-3 text-sm focus:border-orange-500/50 focus:outline-none focus:ring-2 focus:ring-orange-500/50" />
+              </div>
+              <div>
+                <label htmlFor="resume-certifications" className="mb-2 block text-sm font-medium text-gray-400">
+                  Certifications & Expertise
+                </label>
+                <textarea id="resume-certifications" name="certifications" value={resumeText.certifications} onChange={handleResumeTextChange} rows={5} className="w-full rounded-lg border border-gray-800 bg-gray-900/50 px-4 py-3 text-sm focus:border-orange-500/50 focus:outline-none focus:ring-2 focus:ring-orange-500/50" />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4">
+              <Button type="submit" className="px-8 py-3">
+                <SaveIcon size={16} />
+                Save Resume Sections
+              </Button>
+              <Button type="button" variant="secondary" className="px-4 py-3" onClick={handleClearResume}>
+                <Trash2Icon size={16} />
+                Clear All Resume
+              </Button>
+              {resumeStatus !== 'idle' && <p className={`text-sm ${resumeStatus === 'success' ? 'text-green-500' : 'text-red-500'}`}>{resumeMessage}</p>}
+            </div>
+          </form>
         </div>
         )}
       </div>

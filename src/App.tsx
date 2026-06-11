@@ -12,9 +12,11 @@ import ScrollProgress from './components/ui/ScrollProgress';
 import ParticleBackground from './components/ui/ParticleBackground';
 import WhatsAppButton from './components/WhatsAppButton';
 import SEO from './components/SEO';
+import GitHubProjects from './components/GitHubProjects';
 export function App() {
   const [scrollY, setScrollY] = useState(0);
   const isAdminPage = window.location.pathname === '/admin';
+  const isGitPage = window.location.pathname === '/git';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,6 +35,8 @@ export function App() {
       <Header scrollY={scrollY} />
       {isAdminPage ? <main className="pt-20">
           <AdminSection />
+        </main> : isGitPage ? <main>
+          <GitHubProjects />
         </main> : <main>
           <Hero />
           <About />

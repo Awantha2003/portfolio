@@ -95,3 +95,17 @@ export const deleteAdminProject = async (projectId: number) => {
 
   window.dispatchEvent(new Event(ADMIN_PROJECTS_EVENT));
 };
+
+export const deleteAllAdminProjects = async () => {
+  const response = await fetch('/api/projects?all=true', {
+    method: 'DELETE',
+    headers: getAuthHeaders()
+  });
+  const result = await readApiResponse(response);
+
+  if (!response.ok) {
+    throw new Error(getApiError(result, `Projects API returned ${response.status}`));
+  }
+
+  window.dispatchEvent(new Event(ADMIN_PROJECTS_EVENT));
+};

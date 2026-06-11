@@ -1,9 +1,79 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { DownloadIcon, ExternalLinkIcon, FileTextIcon, AwardIcon, BriefcaseIcon, GraduationCapIcon } from 'lucide-react';
 import Button from './ui/Button';
+import type { ResumeContent } from '../types/resumeContent';
+import { ADMIN_RESUME_EVENT, getAdminResumeContent } from '../utils/adminResume';
+
+const defaultResumeContent: ResumeContent = {
+  resumeUrl: 'https://drive.google.com/file/d/1OTrqNG6cXWZkoXwahXFOjmVy68eg6Kqg/view?pli=1',
+  education: [
+    {
+      degree: "Bachelor's Degree in Software Engineering",
+      institution: "Sri Lanka Institute of Information Technology (SLIIT)",
+      period: "2021 - Present",
+      status: "Undergraduate"
+    }
+  ],
+  experience: [
+    {
+      position: "Full Stack Developer",
+      company: "Mobile App Development",
+      period: "2025 - Present",
+      description: "Leading development of enterprise web applications with React and MERN stack"
+    },
+    {
+      position: "UI/UX Engineer",
+      company: "Figma and Adobe XD",
+      period: "2025",
+      description: "Designed and implemented user interfaces for mobile and web applications"
+    },
+    {
+      position: "Frontend Developer",
+      company: "React and React Native",
+      period: "2025",
+      description: "Developed responsive web applications using React and modern JavaScript"
+    }
+  ],
+  keySkills: ['React', 'Node.js', 'Java', 'Spring Boot', 'MongoDB', 'MySQL', 'TailwindCSS', 'Figma', 'Git', 'Docker', 'TypeScript', 'React Native'],
+  certifications: [
+    {
+      name: "Machine Learning Operations (MLOps) for Generative AI",
+      issuer: "Google Cloud Skills Boost",
+      year: "2024",
+      url: "https://www.cloudskillsboost.google/public_profiles/0781d0ff-b1f8-469c-9590-caa6429ca24f/badges/13505552?utm_medium=social&utm_source=linkedin&utm_campaign=ql-social-share"
+    },
+    {
+      name: "Introduction to Generative AI",
+      issuer: "Google Cloud Skills Boost",
+      year: "2024"
+    },
+    {
+      name: "Microsoft Azure Fundamentals",
+      issuer: "Microsoft",
+      year: "2024",
+      url: "https://learn.microsoft.com/en-gb/users/awanthaimesh-3164/achievements/uxs9zf63?ref=https%3A%2F%2Fwww.linkedin.com%2F"
+    },
+    {
+      name: "Full Stack Web Development",
+      issuer: "React, Node.js, MongoDB",
+      year: "2024"
+    },
+    {
+      name: "UI/UX Design",
+      issuer: "Figma, Adobe XD",
+      year: "2024"
+    },
+    {
+      name: "Mobile App Development",
+      issuer: "React Native, Kotlin",
+      year: "2024"
+    }
+  ]
+};
 
 const Resume: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [resumeContent, setResumeContent] = useState<ResumeContent | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -27,80 +97,27 @@ const Resume: React.FC = () => {
     };
   }, []);
 
-  const education = [
-    {
-      degree: "Bachelor's Degree in Software Engineering",
-      institution: "Sri Lanka Institute of Information Technology (SLIIT)",
-      period: "2021 - Present",
-      status: "Undergraduate",
-      icon: <GraduationCapIcon size={24} className="text-orange-500" />
-    }
-  ];
+  useEffect(() => {
+    const syncResume = () => {
+      getAdminResumeContent()
+        .then(resume => setResumeContent(resume))
+        .catch(() => setResumeContent(null));
+    };
 
-  const experience = [
-    {
-      position: "Full Stack Developer",
-      company: "Mobile App Development",
-      period: "2025 - Present",
-      description: "Leading development of enterprise web applications with React and MERN stack",
-      icon: <BriefcaseIcon size={24} className="text-orange-500" />
-    },
-    {
-      position: "UI/UX Engineer",
-      company: "Figma and Adobe XD",
-      period: "2025",
-      description: "Designed and implemented user interfaces for mobile and web applications",
-      icon: <BriefcaseIcon size={24} className="text-orange-500" />
-    },
-    {
-      position: "Frontend Developer",
-      company: "React and React Native",
-      period: "2025",
-      description: "Developed responsive web applications using React and modern JavaScript",
-      icon: <BriefcaseIcon size={24} className="text-orange-500" />
-    }
-  ];
+    syncResume();
+    window.addEventListener(ADMIN_RESUME_EVENT, syncResume);
 
-  const certifications = [
-    {
-      name: "Machine Learning Operations (MLOps) for Generative AI",
-      issuer: "Google Cloud Skills Boost",
-      year: "2024",
-      url: "https://www.cloudskillsboost.google/public_profiles/0781d0ff-b1f8-469c-9590-caa6429ca24f/badges/13505552?utm_medium=social&utm_source=linkedin&utm_campaign=ql-social-share",
-      icon: <AwardIcon size={20} className="text-orange-500" />
-    },
-    {
-      name: "Introduction to Generative AI",
-      issuer: "Google Cloud Skills Boost",
-      year: "2024",
-      icon: <AwardIcon size={20} className="text-orange-500" />
-    },
-    {
-      name: "Microsoft Azure Fundamentals",
-      issuer: "Microsoft",
-      year: "2024",
-      url: "https://learn.microsoft.com/en-gb/users/awanthaimesh-3164/achievements/uxs9zf63?ref=https%3A%2F%2Fwww.linkedin.com%2F",
-      icon: <AwardIcon size={20} className="text-orange-500" />
-    },
-    {
-      name: "Full Stack Web Development",
-      issuer: "React, Node.js, MongoDB",
-      year: "2024",
-      icon: <AwardIcon size={20} className="text-orange-500" />
-    },
-    {
-      name: "UI/UX Design",
-      issuer: "Figma, Adobe XD",
-      year: "2024",
-      icon: <AwardIcon size={20} className="text-orange-500" />
-    },
-    {
-      name: "Mobile App Development",
-      issuer: "React Native, Kotlin",
-      year: "2024",
-      icon: <AwardIcon size={20} className="text-orange-500" />
-    }
-  ];
+    return () => {
+      window.removeEventListener(ADMIN_RESUME_EVENT, syncResume);
+    };
+  }, []);
+
+  const activeResume = resumeContent ?? defaultResumeContent;
+  const education = activeResume.education;
+  const experience = activeResume.experience;
+  const keySkills = activeResume.keySkills;
+  const certifications = activeResume.certifications;
+  const resumeUrl = activeResume.resumeUrl || defaultResumeContent.resumeUrl || '#';
 
   return (
     <section id="resume" ref={sectionRef} className="py-24 bg-black relative overflow-hidden">
@@ -126,15 +143,15 @@ const Resume: React.FC = () => {
           {/* Download buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
-              href="https://drive.google.com/uc?export=download&id=1OTrqNG6cXWZkoXwahXFOjmVy68eg6Kqg"
+              href={resumeUrl}
               className="group relative overflow-hidden bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-orange-500/30"
               icon={<DownloadIcon size={16} className="group-hover:translate-y-1 transition-transform" />}
             >
-              Download CV (PDF)
+              My Resume
             </Button>
             <Button 
               variant="secondary"
-              href="https://drive.google.com/file/d/1OTrqNG6cXWZkoXwahXFOjmVy68eg6Kqg/view?usp=sharing"
+              href={resumeUrl}
               className="group"
               icon={<ExternalLinkIcon size={16} className="group-hover:translate-x-1 transition-transform" />}
             >
@@ -160,7 +177,7 @@ const Resume: React.FC = () => {
                 <GraduationCapIcon size={28} className="text-orange-500 mr-3" />
                 Education
               </h3>
-              {education.map((edu, index) => (
+              {education.length === 0 ? <p className="text-sm text-gray-500">No education entries added yet.</p> : education.map((edu, index) => (
                 <div key={index} className="border-l-2 border-orange-500/30 pl-6 relative">
                   <div className="absolute -left-3 top-2 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
                     <div className="w-3 h-3 bg-black rounded-full"></div>
@@ -179,7 +196,7 @@ const Resume: React.FC = () => {
                 Experience
               </h3>
               <div className="space-y-6">
-                {experience.map((exp, index) => (
+                {experience.length === 0 ? <p className="text-sm text-gray-500">No experience entries added yet.</p> : experience.map((exp, index) => (
                   <div key={index} className="border-l-2 border-orange-500/30 pl-6 relative">
                     <div className="absolute -left-3 top-2 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
                       <div className="w-3 h-3 bg-black rounded-full"></div>
@@ -210,7 +227,7 @@ const Resume: React.FC = () => {
                 Key Skills
               </h3>
               <div className="grid grid-cols-2 gap-4">
-                {['React', 'Node.js', 'Java', 'Spring Boot', 'MongoDB', 'MySQL', 'TailwindCSS', 'Figma', 'Git', 'Docker', 'TypeScript', 'React Native'].map((skill, index) => (
+                {keySkills.length === 0 ? <p className="col-span-2 text-sm text-gray-500">No key skills added yet.</p> : keySkills.map((skill, index) => (
                   <div 
                     key={skill} 
                     className="flex items-center p-2 bg-gray-800/50 rounded hover:bg-orange-500/20 transition-colors duration-300"
@@ -232,17 +249,17 @@ const Resume: React.FC = () => {
                 Certifications & Expertise
               </h3>
               <div className="space-y-4">
-                {certifications.map((cert, index) => (
+                {certifications.length === 0 ? <p className="text-sm text-gray-500">No certifications added yet.</p> : certifications.map((cert, index) => (
                   <div key={index} className="flex items-start p-3 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors duration-300">
-                    <div className="mr-3 mt-1">{cert.icon}</div>
+                    <AwardIcon size={20} className="mr-3 mt-1 shrink-0 text-orange-500" />
                     <div className="flex-1">
                       <h4 className="font-medium text-gray-200">{cert.name}</h4>
                       <p className="text-gray-400 text-sm">{cert.issuer}</p>
                       <div className="flex items-center justify-between">
                         <p className="text-orange-500 text-xs">{cert.year}</p>
-                        {(cert as any).url && (
+                        {cert.url && (
                           <a 
-                            href={(cert as any).url} 
+                            href={cert.url} 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="text-xs text-orange-500 hover:text-orange-400 transition-colors flex items-center"
@@ -281,7 +298,7 @@ const Resume: React.FC = () => {
             </Button>
             <Button 
               variant="secondary"
-              href="https://drive.google.com/uc?export=download&id=1OTrqNG6cXWZkoXwahXFOjmVy68eg6Kqg"
+              href={resumeUrl}
               icon={<DownloadIcon size={16} />}
             >
               Download Full CV

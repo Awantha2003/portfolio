@@ -11,6 +11,7 @@ type ProjectRow = {
   live_url: string | null;
   github_url: string | null;
   figma_url: string | null;
+  pinned: boolean | null;
   created_at: string;
 };
 
@@ -63,10 +64,12 @@ const ensureProjectsTable = async () => {
       live_url text,
       github_url text,
       figma_url text,
+      pinned boolean not null default false,
       source text not null default 'admin',
       created_at timestamptz not null default now()
     )
   `);
+  await query('alter table portfolio_projects add column if not exists pinned boolean not null default false');
 };
 
 const mapProject = (row: ProjectRow) => ({
@@ -79,6 +82,7 @@ const mapProject = (row: ProjectRow) => ({
   liveUrl: row.live_url || undefined,
   githubUrl: row.github_url || undefined,
   FigmaUrl: row.figma_url || undefined,
+  pinned: Boolean(row.pinned),
   source: 'admin' as const,
   createdAt: row.created_at
 });
@@ -131,7 +135,8 @@ const readProjectPayload = (body: Record<string, unknown>) => ({
   stack: readStringArray(body.stack),
   liveUrl: readString(body.liveUrl) || null,
   githubUrl: readString(body.githubUrl) || null,
-  FigmaUrl: readString(body.FigmaUrl) || null
+  FigmaUrl: readString(body.FigmaUrl) || null,
+  pinned: body.pinned === true
 });
 
 const validateProjectPayload = (payload: ReturnType<typeof readProjectPayload>) => {
@@ -156,9 +161,9 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
     if (request.method === 'GET') {
       const result = await query<ProjectRow>(`
-        select id, title, description, image, category, stack, live_url, github_url, figma_url, created_at
+        select id, title, description, image, category, stack, live_url, github_url, figma_url, pinned, created_at
         from portfolio_projects
-        order by created_at desc, id desc
+        order by pinned desc, created_at desc, id desc
       `);
 
       response.status(200).json({ projects: result.rows.map(mapProject) });
@@ -179,11 +184,15 @@ export default async function handler(request: VercelRequest, response: VercelRe
         return;
       }
 
+      if (payload.pinned) {
+        await query('update portfolio_projects set pinned = false');
+      }
+
       const result = await query<ProjectRow>(`
-        insert into portfolio_projects (title, description, image, category, stack, live_url, github_url, figma_url)
-        values ($1, $2, $3, $4, $5, $6, $7, $8)
-        returning id, title, description, image, category, stack, live_url, github_url, figma_url, created_at
-      `, [payload.title, payload.description, payload.image, payload.category, payload.stack, payload.liveUrl, payload.githubUrl, payload.FigmaUrl]);
+        insert into portfolio_projects (title, description, image, category, stack, live_url, github_url, figma_url, pinned)
+        values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        returning id, title, description, image, category, stack, live_url, github_url, figma_url, pinned, created_at
+      `, [payload.title, payload.description, payload.image, payload.category, payload.stack, payload.liveUrl, payload.githubUrl, payload.FigmaUrl, payload.pinned]);
 
       response.status(201).json({ project: mapProject(result.rows[0]) });
       return;
@@ -204,6 +213,10 @@ export default async function handler(request: VercelRequest, response: VercelRe
         return;
       }
 
+      if (payload.pinned) {
+        await query('update portfolio_projects set pinned = false where id <> $1', [projectId]);
+      }
+
       const result = await query<ProjectRow>(`
         update portfolio_projects
         set title = $2,
@@ -213,10 +226,11 @@ export default async function handler(request: VercelRequest, response: VercelRe
             stack = $6,
             live_url = $7,
             github_url = $8,
-            figma_url = $9
+            figma_url = $9,
+            pinned = $10
         where id = $1
-        returning id, title, description, image, category, stack, live_url, github_url, figma_url, created_at
-      `, [projectId, payload.title, payload.description, payload.image, payload.category, payload.stack, payload.liveUrl, payload.githubUrl, payload.FigmaUrl]);
+        returning id, title, description, image, category, stack, live_url, github_url, figma_url, pinned, created_at
+      `, [projectId, payload.title, payload.description, payload.image, payload.category, payload.stack, payload.liveUrl, payload.githubUrl, payload.FigmaUrl, payload.pinned]);
 
       if (!result.rows[0]) {
         response.status(404).json({ error: 'Project not found' });
@@ -228,6 +242,12 @@ export default async function handler(request: VercelRequest, response: VercelRe
     }
 
     if (request.method === 'DELETE') {
+      if (request.query.all === 'true') {
+        await query('delete from portfolio_projects');
+        response.status(200).json({ ok: true });
+        return;
+      }
+
       const projectId = Number(request.query.id);
 
       if (!Number.isFinite(projectId)) {
