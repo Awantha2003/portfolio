@@ -19,7 +19,7 @@ Backend endpoints run as Vercel serverless functions in `api`.
 - `POST /api/upload-image` uploads base64 image data to Cloudinary.
 - `POST /api/admin-login` validates admin login credentials.
 
-Image uploads are limited to 1 MB before base64 encoding to stay within Vercel request limits.
+Image uploads are limited to 5 MB before base64 encoding.
 
 ## Environment
 

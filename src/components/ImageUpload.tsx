@@ -24,6 +24,9 @@ const fileToDataUrl = (file: File) =>
     reader.readAsDataURL(file);
   });
 
+const MAX_IMAGE_SIZE_MB = 5;
+const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
+
 const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<'idle' | 'uploading' | 'error'>('idle');
@@ -44,9 +47,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange }) => {
       return;
     }
 
-    if (file.size > 1024 * 1024) {
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
       setStatus('error');
-      setError('Please choose an image smaller than 1 MB.');
+      setError(`Please choose an image smaller than ${MAX_IMAGE_SIZE_MB} MB.`);
       return;
     }
 
@@ -120,7 +123,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange }) => {
             {status === 'uploading' ? <Loader2 size={16} className="animate-spin" /> : <ImagePlus size={16} />}
             {status === 'uploading' ? 'Uploading...' : 'Upload Image'}
           </Button>
-          <p className="mt-3 text-sm text-gray-500">PNG, JPG, WebP, or GIF up to 1 MB.</p>
+          <p className="mt-3 text-sm text-gray-500">PNG, JPG, WebP, or GIF up to {MAX_IMAGE_SIZE_MB} MB.</p>
         </div>
       )}
       {status === 'error' && <p className="mt-2 text-sm text-red-500">{error}</p>}
