@@ -3,7 +3,7 @@ import { renderToString } from 'react-dom/server';
 import { App } from './App';
 import { ContentContext, mergeContent } from './content/ContentProvider';
 import { defaultContent, type SiteContent } from './data/content';
-import { buildHead } from './seo';
+import { buildHead, buildLlmsTxt } from './seo';
 import { sql } from '../api/_lib/db';
 
 /** Reads the sections saved from the admin panel, if the database is reachable at build time. */
@@ -30,6 +30,7 @@ export async function prerender(siteUrl: string, googleVerification?: string) {
   return {
     html,
     head: buildHead(content, siteUrl, googleVerification),
+    llms: buildLlmsTxt(content, siteUrl),
     // Lets the browser start with the same content the HTML was rendered from.
     state: `<script>window.__CONTENT__=${JSON.stringify(saved).replace(/</g, '\\u003c')}</script>`
   };

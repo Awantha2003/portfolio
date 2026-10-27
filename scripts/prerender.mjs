@@ -12,7 +12,7 @@ const serverEntry = resolve(dist, 'server', 'entry-server.js');
 const siteUrl = (process.env.SITE_URL || 'https://awantha-imesh-portfolio.vercel.app').replace(/\/+$/, '');
 
 const { prerender } = await import(pathToFileURL(serverEntry).href);
-const { html, head, state } = await prerender(siteUrl, process.env.GOOGLE_SITE_VERIFICATION);
+const { html, head, state, llms } = await prerender(siteUrl, process.env.GOOGLE_SITE_VERIFICATION);
 
 const indexPath = resolve(dist, 'index.html');
 const template = readFileSync(indexPath, 'utf8');
@@ -40,14 +40,22 @@ writeFileSync(resolve(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8
   </url>
 </urlset>
 `);
-writeFileSync(resolve(dist, 'robots.txt'), `User-agent: *
-Allow: /
-Disallow: /admin
-Disallow: /api/
+// Search engines and AI assistants are all welcome; only the admin panel and API are off limits.
+const aiBots = ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-User', 'Claude-SearchBot', 'anthropic-ai',
+'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot-Extended', 'CCBot', 'Meta-ExternalAgent', 'Bingbot', 'DuckAssistBot', 'cohere-ai'];
+writeFileSync(resolve(dist, 'robots.txt'), [
+'User-agent: *', 'Allow: /', 'Disallow: /admin', 'Disallow: /api/', '',
+...aiBots.flatMap((bot) => [`User-agent: ${bot}`, 'Allow: /', 'Disallow: /admin', 'Disallow: /api/', '']),
+`Sitemap: ${siteUrl}/sitemap.xml`, ''].
+join('\n'));
 
-Sitemap: ${siteUrl}/sitemap.xml
-`);
+writeFileSync(resolve(dist, 'llms.txt'), llms.short);
+writeFileSync(resolve(dist, 'llms-full.txt'), llms.full);
+
+// IndexNow lets Bing (which powers ChatGPT search) and other engines pick up changes right away.
+const INDEXNOW_KEY = 'e0fca47d353905d2bb8ac2968d6e8d79';
+writeFileSync(resolve(dist, `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY);
 
 // The server bundle was only needed to render; don't deploy it.
 rmSync(resolve(dist, 'server'), { recursive: true, force: true });
-console.log(`[prerender] ${siteUrl} — ${(html.length / 1024).toFixed(0)} KB of HTML, sitemap.xml, robots.txt`);
+console.log(`[prerender] ${siteUrl} — ${(html.length / 1024).toFixed(0)} KB of HTML, sitemap.xml, robots.txt, llms.txt, llms-full.txt`);

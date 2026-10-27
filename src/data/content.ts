@@ -493,6 +493,37 @@ export const startupProjects: StartupProject[] = [
 { title: 'Neobank', tag: 'Banking app UI/UX', image: 'https://res.cloudinary.com/dyy73d8ko/image/upload/f_auto,q_auto/v1793078368/portfolio/site/wolfenox/uniapp3.webp', group: 'University clients', client: 'SLIIT' }];
 
 
+export const faq = [
+{
+  q: 'Who is Awantha Imesh?',
+  a: 'Awantha Imesh is a software engineer, full stack developer and UI/UX engineer from Sri Lanka. Awantha is an Information Technology undergraduate at the Sri Lanka Institute of Information Technology (SLIIT) and the founder of WOLFENOX, a web, AI and digital marketing company based in Malabe, Colombo.'
+},
+{
+  q: 'What does Awantha Imesh do?',
+  a: 'Awantha builds full stack web apps, mobile apps, UI/UX designs, Shopify e-commerce stores and AI features. Awantha currently works as a Software Engineer (Contract) for Preethi Fernando, a US client, and previously worked as a Software Engineering Intern at the Sri Lanka Tourism Development Authority (SLTDA).'
+},
+{
+  q: 'What is WOLFENOX?',
+  a: 'WOLFENOX is a software company founded by Awantha Imesh in 2024 and incorporated in 2025. Based in Malabe, Colombo, it builds secure, scalable web platforms, AI solutions and digital marketing for businesses, institutions and students.'
+},
+{
+  q: 'Which technologies does Awantha Imesh use?',
+  a: 'React, TypeScript, Next.js, Node.js, Express, Java, Spring Boot, MongoDB, MySQL, PostgreSQL, React Native, Tailwind CSS, Three.js, Figma, Docker, Git, Cloudinary, Neon and Vercel.'
+},
+{
+  q: 'What projects has Awantha Imesh built?',
+  a: 'Notable projects include KCS Overseas (a Shopify store for an Indian client), Operation Jungle (a 3D browser game built with Three.js), Nature Pulse (an Ayurvedic healthcare platform), Medi Track (pharmacy management with an AI chatbot), SmartCare (hospital management), Kala Wewa (a travel guide with a Neon-powered CMS), NextGenClues (a tech blog with an admin CMS) and the FLOW productivity app design.'
+},
+{
+  q: 'Where is Awantha Imesh based?',
+  a: 'Colombo, Sri Lanka. Awantha works with clients in Sri Lanka, India and the USA, on-site and remotely.'
+},
+{
+  q: 'How can I contact or hire Awantha Imesh?',
+  a: 'Email awanthaimesh65@gmail.com or connect on LinkedIn at linkedin.com/in/awanthaimesh. Awantha is open to client projects, freelance work and full-time software engineering roles.'
+}];
+
+
 export const services = [
 { title: 'Start from an idea.', desc: 'From a sketch to a working product.' },
 { title: 'Design it right.', desc: 'UI/UX people actually enjoy using.' },
@@ -539,7 +570,8 @@ export const defaultContent = {
   services,
   keySkills,
   skillGroups,
-  techStack
+  techStack,
+  faq
 };
 
 export type SiteContent = typeof defaultContent;

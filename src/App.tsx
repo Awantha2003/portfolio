@@ -11,6 +11,7 @@ import { ContentOffers } from './components/ContentOffers';
 import { HowItsDone } from './components/HowItsDone';
 import { MicSection } from './components/MicSection';
 import { ListPodcast } from './components/ListPodcast';
+import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
 import { useReveal } from './hooks/useReveal';
 
@@ -33,6 +34,7 @@ export function App() {
         <HowItsDone />
         <MicSection />
         <ListPodcast />
+        <Faq />
       </main>
       <Footer />
     </div>);

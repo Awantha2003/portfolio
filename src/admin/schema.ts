@@ -113,6 +113,11 @@ export const sections: Section[] = [
 {
   key: 'skillGroups', title: 'Skill groups', group: 'Skills', kind: 'list', itemTitle: 'category',
   fields: [text('category', 'Category'), { name: 'skills', label: 'Skills', type: 'tags' }]
+},
+{
+  key: 'faq', title: 'Quick facts (FAQ)', group: 'SEO', kind: 'list', itemTitle: 'q',
+  description: 'Shown on the site and given to Google and AI assistants as question/answer pairs. Write full sentences that use your name.',
+  fields: [text('q', 'Question'), area('a', 'Answer')]
 }];
 
 
