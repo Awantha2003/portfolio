@@ -1,6 +1,6 @@
-import React from 'react';
 import { CheckIcon, XIcon } from 'lucide-react';
 import { useContent } from '../content/ContentProvider';
+import { safeUrl } from '../lib/safeUrl';
 
 export function Audience() {
   const { whatIBuild, workWithMe } = useContent();
@@ -36,7 +36,7 @@ export function Audience() {
                   {item.text}
                   <br />
                   <a
-                  href={item.href}
+                  href={safeUrl(item.href)}
                   className={`underline underline-offset-4 transition-opacity duration-150 hover:opacity-70 ${item.tone === 'brand' ? 'text-brand' : 'font-bold text-ink'}`}>
                   
                     {item.link}

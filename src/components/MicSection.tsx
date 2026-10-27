@@ -1,9 +1,10 @@
-import React from "react";
-import { GithubIcon, LinkedinIcon, MailIcon, MapPinIcon, BoxIcon } from "lucide-react";
+import { GithubIcon, LinkedinIcon, MailIcon, MapPinIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { contactPointsFor } from "../data/content";
 import { useContent } from '../content/ContentProvider';
 import { CutButton } from "./CutButton";
-const iconMap: Record<string, BoxIcon> = {
+import { safeUrl } from "../lib/safeUrl";
+const iconMap: Record<string, LucideIcon> = {
   mail: MailIcon,
   pin: MapPinIcon,
   github: GithubIcon,
@@ -11,7 +12,7 @@ const iconMap: Record<string, BoxIcon> = {
 };
 export function MicSection() {
   const { images, profile } = useContent();
-  return <section id="contact" className="grid-bg w-full border-b border-black/10 py-24 md:py-36">
+  return <section id="contact" className="grid-bg w-full border-b border-black/10 py-16 md:py-36">
       <div className="mx-auto grid max-w-[1860px] items-center gap-16 px-6 md:px-[3%] lg:grid-cols-2 lg:pr-[14%]">
         <div data-reveal className="relative mx-auto w-full max-w-[560px] overflow-hidden rounded-[28px] shadow-[0_40px_80px_-30px_rgba(0,0,0,0.45)]">
           <img src={images.profile} alt={profile.name} className="aspect-[4/5] w-full object-cover" />
@@ -37,7 +38,7 @@ export function MicSection() {
                 </>;
             return <li key={p.text} className="border-b border-black/10 py-6 text-lg text-ink last:border-b-0 md:text-[1.6rem]">
                   {p.href ?
-              <a href={p.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-6 break-all transition-colors duration-150 hover:text-brand">{body}</a> :
+              <a href={safeUrl(p.href)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-6 break-all transition-colors duration-150 hover:text-brand">{body}</a> :
               <span className="flex items-center gap-6">{body}</span>}
                 </li>;
           })}

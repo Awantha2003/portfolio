@@ -1,5 +1,6 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { SideNav } from './components/SideNav';
+import { MobileNav } from './components/MobileNav';
 import { Hero } from './components/Hero';
 import { BrandStrip } from './components/BrandStrip';
 import { Audience } from './components/Audience';
@@ -21,6 +22,7 @@ export function App() {
 
   return (
     <div ref={root} className="w-full min-h-screen overflow-x-hidden bg-white">
+      <MobileNav />
       <SideNav />
       <main>
         <Hero />

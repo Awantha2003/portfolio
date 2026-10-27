@@ -12,7 +12,12 @@ const serverEntry = resolve(dist, 'server', 'entry-server.js');
 const siteUrl = (process.env.SITE_URL || 'https://awantha-imesh-portfolio.vercel.app').replace(/\/+$/, '');
 
 const { prerender } = await import(pathToFileURL(serverEntry).href);
-const { html, head, state, llms } = await prerender(siteUrl, process.env.GOOGLE_SITE_VERIFICATION);
+// Search-engine ownership codes. They are public (they end up in the page), so they can live here or in env vars.
+const verification = {
+  google: process.env.GOOGLE_SITE_VERIFICATION || '',
+  bing: process.env.BING_SITE_VERIFICATION || '4A121546854514624218225EC7C5D9C2'
+};
+const { html, head, state, llms } = await prerender(siteUrl, verification);
 
 const indexPath = resolve(dist, 'index.html');
 const template = readFileSync(indexPath, 'utf8');

@@ -1,11 +1,10 @@
-import React from 'react';
 import { PlusIcon } from 'lucide-react';
 import { useContent } from '../content/ContentProvider';
 
 export function Faq() {
   const { faq } = useContent();
   return (
-    <section id="faq" className="w-full border-t border-black/10 bg-paper py-24 md:py-32">
+    <section id="faq" className="w-full border-t border-black/10 bg-paper py-16 md:py-32">
       <div className="mx-auto max-w-[1100px] px-6 lg:pr-56">
         <h2 data-big className="font-display text-6xl uppercase leading-none text-ink md:text-[5.5rem]">
           Quick <span className="text-brand">facts</span>

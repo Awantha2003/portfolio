@@ -1,4 +1,3 @@
-import React from 'react';
 import { CheckIcon } from 'lucide-react';
 import { useContent } from '../content/ContentProvider';
 import { CutButton } from './CutButton';
@@ -6,7 +5,7 @@ import { CutButton } from './CutButton';
 export function ListPodcast() {
   const { keySkills, profile, skillGroups } = useContent();
   return (
-    <section id="skills" className="w-full bg-white py-24 md:py-32">
+    <section id="skills" className="w-full bg-white py-16 md:py-32">
       <div className="mx-auto grid max-w-[1500px] items-start gap-16 px-6 lg:grid-cols-2 lg:pr-56">
         <div data-reveal>
           <h2 className="font-display text-6xl uppercase leading-none text-ink md:text-[5.5rem]">My stack</h2>

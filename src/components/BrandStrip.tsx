@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { useContent } from '../content/ContentProvider';
 import { gsap, useIsoLayoutEffect } from '../hooks/useReveal';
 

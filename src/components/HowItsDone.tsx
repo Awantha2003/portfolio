@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeftIcon, ChevronRightIcon, PlayIcon, XIcon } from 'lucide-react';
 import { useContent } from '../content/ContentProvider';
@@ -49,7 +49,7 @@ export function HowItsDone() {
 
   return (
     <section id="experience" ref={section} className="relative w-full overflow-hidden bg-black text-white">
-      <div className="video-frame relative h-[80vh] min-h-[520px] w-full overflow-hidden">
+      <div className="video-frame relative h-[60vh] min-h-[400px] w-full md:h-[80vh] md:min-h-[520px] overflow-hidden">
         <video
           className="video-el absolute inset-0 h-full w-full object-cover"
           src={images.showreel}

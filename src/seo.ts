@@ -7,7 +7,9 @@ const socialImage = (url: string) =>
 url.includes('res.cloudinary.com') ? url.replace(/\/upload\/(?:[^/]*,[^/]*\/)?/, '/upload/c_fill,g_face,w_1200,h_630,f_jpg,q_auto/') : url;
 
 /** Everything Google and social sites read from <head>. Built from the live content at deploy time. */
-export function buildHead(c: SiteContent, siteUrl: string, googleVerification?: string) {
+export type Verification = { google?: string; bing?: string; };
+
+export function buildHead(c: SiteContent, siteUrl: string, verification: Verification = {}) {
   const { profile, startup, education, experience, keySkills, projects, certifications, faq } = c;
   const url = siteUrl.replace(/\/+$/, '') + '/';
   const title = `${profile.name} | Software Engineer & Full Stack Developer in Sri Lanka`;
@@ -118,7 +120,8 @@ export function buildHead(c: SiteContent, siteUrl: string, googleVerification?: 
   `<meta name="twitter:title" content="${esc(title)}" />`,
   `<meta name="twitter:description" content="${esc(description)}" />`,
   `<meta name="twitter:image" content="${esc(image)}" />`,
-  googleVerification ? `<meta name="google-site-verification" content="${esc(googleVerification)}" />` : '',
+  verification.google ? `<meta name="google-site-verification" content="${esc(verification.google)}" />` : '',
+  verification.bing ? `<meta name="msvalidate.01" content="${esc(verification.bing)}" />` : '',
   `<script type="application/ld+json">${JSON.stringify(graph).replace(/</g, '\\u003c')}</script>`].
   filter(Boolean).join('\n    ');
 }

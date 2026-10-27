@@ -24,7 +24,17 @@ export const useContent = () => useContext(ContentContext);
 const WAIT_MS = 2500;
 
 // Content the page was pre-rendered with (see scripts/prerender.mjs).
-const preloaded = typeof window !== 'undefined' ? (window as Window & { __CONTENT__?: Partial<Record<ContentKey, unknown>>; }).__CONTENT__ : undefined;
+function readPreloaded(): Partial<Record<ContentKey, unknown>> | undefined {
+  if (typeof document === 'undefined') return undefined;
+  const el = document.getElementById('__CONTENT__');
+  if (!el?.textContent) return undefined;
+  try {
+    return JSON.parse(el.textContent);
+  } catch {
+    return undefined;
+  }
+}
+const preloaded = readPreloaded();
 
 export function ContentProvider({ children }: { children: React.ReactNode; }) {
   const [content, setContent] = useState<SiteContent | null>(() => preloaded ? mergeContent(preloaded) : null);

@@ -2,10 +2,11 @@ import { defaultContent } from '../src/data/content.js';
 import { requireAdmin } from './_lib/auth.js';
 import { ensureSchema, sql } from './_lib/db.js';
 import { HttpError, readJson, route } from './_lib/http.js';
+import { assertSafeContent } from './_lib/validate.js';
 
 function sectionKey(url: URL) {
   const key = url.searchParams.get('key') ?? '';
-  if (!Object.prototype.hasOwnProperty.call(defaultContent, key)) throw new HttpError(400, `Unknown section "${key}"`);
+  if (!Object.prototype.hasOwnProperty.call(defaultContent, key)) throw new HttpError(400, 'Unknown section');
   return key as keyof typeof defaultContent;
 }
 
@@ -31,6 +32,7 @@ export default route({
     const expected = defaultContent[key];
     const sameShape = Array.isArray(expected) ? Array.isArray(data) : typeof data === 'object' && data !== null && !Array.isArray(data);
     if (!sameShape) throw new HttpError(400, `"${key}" must be ${Array.isArray(expected) ? 'a list' : 'an object'}`);
+    assertSafeContent(data);
     await ensureSchema();
     await sql(
       `insert into site_content (key, data) values ($1, $2::jsonb)

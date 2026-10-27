@@ -30,13 +30,20 @@ export async function sql(query: string, params: string[] = []): Promise<Record<
 
 let ready: Promise<unknown> | undefined;
 
-/** Creates the content table on first use, once per server instance. */
+/** Creates the tables on first use, once per server instance. */
 export function ensureSchema() {
-  ready ??= sql(`create table if not exists site_content (
-    key text primary key,
-    data jsonb not null,
-    updated_at timestamptz not null default now()
-  )`).catch((err) => {
+  ready ??= (async () => {
+    await sql(`create table if not exists site_content (
+      key text primary key,
+      data jsonb not null,
+      updated_at timestamptz not null default now()
+    )`);
+    await sql(`create table if not exists login_attempts (
+      ip text not null,
+      at timestamptz not null default now()
+    )`);
+    await sql('create index if not exists login_attempts_ip_at on login_attempts (ip, at)');
+  })().catch((err) => {
     ready = undefined;
     throw err;
   });

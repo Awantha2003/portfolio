@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { navItems } from '../data/content';
 
 export function SideNav() {

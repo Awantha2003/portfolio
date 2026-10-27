@@ -1,7 +1,8 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { AwardIcon, ChevronLeftIcon, ChevronRightIcon, ExternalLinkIcon } from 'lucide-react';
 import { useContent } from '../content/ContentProvider';
 import { CutButton } from './CutButton';
+import { safeUrl } from '../lib/safeUrl';
 
 export function BattleLogs() {
   const { certifications, profile } = useContent();
@@ -9,7 +10,7 @@ export function BattleLogs() {
   const scroll = (dir: number) => track.current?.scrollBy({ left: dir * 410, behavior: 'smooth' });
 
   return (
-    <section id="certifications" className="w-full bg-white py-24 md:py-36">
+    <section id="certifications" className="w-full bg-white py-16 md:py-36">
       <p data-reveal className="text-center text-xl font-bold uppercase tracking-[0.2em] text-brand">Proof of learning</p>
       <h2 data-big className="mt-4 text-center font-display text-6xl uppercase text-ink md:text-[7rem] md:leading-none">My certifications</h2>
 
@@ -44,7 +45,7 @@ export function BattleLogs() {
               </div>
               <div className="flex items-center gap-6 border-t border-black/10 px-8 py-6 text-lg text-black/55 md:px-9">
                 {c.url &&
-              <a href={c.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 font-semibold text-brand transition-opacity duration-150 hover:opacity-70">
+              <a href={safeUrl(c.url)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 font-semibold text-brand transition-opacity duration-150 hover:opacity-70">
                     <ExternalLinkIcon className="h-5 w-5" />View
                   </a>
               }

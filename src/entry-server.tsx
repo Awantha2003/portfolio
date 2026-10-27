@@ -1,9 +1,8 @@
-import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { App } from './App';
 import { ContentContext, mergeContent } from './content/ContentProvider';
 import { defaultContent, type SiteContent } from './data/content';
-import { buildHead, buildLlmsTxt } from './seo';
+import { buildHead, buildLlmsTxt, type Verification } from './seo';
 import { sql } from '../api/_lib/db';
 
 /** Reads the sections saved from the admin panel, if the database is reachable at build time. */
@@ -20,7 +19,7 @@ async function loadContent(): Promise<{ content: SiteContent; saved: Record<stri
 }
 
 /** Renders the portfolio to static HTML so search engines see the full page without running JavaScript. */
-export async function prerender(siteUrl: string, googleVerification?: string) {
+export async function prerender(siteUrl: string, verification: Verification = {}) {
   const { content, saved } = await loadContent();
   const html = renderToString(
     <ContentContext.Provider value={content}>
@@ -29,9 +28,10 @@ export async function prerender(siteUrl: string, googleVerification?: string) {
   );
   return {
     html,
-    head: buildHead(content, siteUrl, googleVerification),
+    head: buildHead(content, siteUrl, verification),
     llms: buildLlmsTxt(content, siteUrl),
     // Lets the browser start with the same content the HTML was rendered from.
-    state: `<script>window.__CONTENT__=${JSON.stringify(saved).replace(/</g, '\\u003c')}</script>`
+    // A JSON data block, not an inline script, so the Content-Security-Policy can forbid inline scripts.
+    state: `<script id="__CONTENT__" type="application/json">${JSON.stringify(saved).replace(/</g, '\\u003c')}</script>`
   };
 }

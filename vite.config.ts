@@ -10,7 +10,7 @@ function devApi(): Plugin {
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         const name = /^\/api\/([a-z-]+)(?:\?|$)/.exec(req.url ?? '')?.[1]
-        const file = name && resolve(__dirname, 'api', `${name}.ts`)
+        const file = name && resolve(import.meta.dirname, 'api', `${name}.ts`)
         if (!file || !existsSync(file)) return next()
         try {
           const mod = await server.ssrLoadModule(file)

@@ -1,9 +1,10 @@
-import React from "react";
-import { GithubIcon, LinkedinIcon, MailIcon, BoxIcon } from "lucide-react";
+import { GithubIcon, LinkedinIcon, MailIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { CutButton } from "./CutButton";
 import { socialsFor } from "../data/content";
 import { useContent } from '../content/ContentProvider';
-const iconMap: Record<string, BoxIcon> = {
+import { safeUrl } from '../lib/safeUrl';
+const iconMap: Record<string, LucideIcon> = {
   github: GithubIcon,
   linkedin: LinkedinIcon,
   mail: MailIcon
@@ -26,7 +27,7 @@ export function Footer() {
           {socialsFor(profile).map((s) => {
           const Icon = iconMap[s.platform];
           return <li key={s.platform}>
-                <a href={s.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-xl text-white/75 transition-colors duration-150 hover:text-white md:text-2xl">
+                <a href={safeUrl(s.href)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-xl text-white/75 transition-colors duration-150 hover:text-white md:text-2xl">
                   <Icon className="h-7 w-7" /> {s.handle}
                 </a>
               </li>;

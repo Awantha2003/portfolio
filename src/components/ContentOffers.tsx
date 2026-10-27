@@ -1,11 +1,10 @@
-import React from 'react';
 import { useContent } from '../content/ContentProvider';
 import { CutButton } from './CutButton';
 
 export function ContentOffers() {
   const { images, services } = useContent();
   return (
-    <section id="services" className="w-full bg-white pt-24 md:pt-32">
+    <section id="services" className="w-full bg-white pt-16 md:pt-32">
       <h2 data-big className="px-6 text-center font-display text-6xl uppercase leading-none text-ink md:text-[7rem]">
         What I <span className="text-brand">can build for you</span>
       </h2>
@@ -30,7 +29,7 @@ export function ContentOffers() {
         <img src={images.devices} alt="Responsive design shown across desktop, laptop, tablet and phone" className="w-full" />
       </div>
 
-      <div className="mx-auto grid max-w-[1400px] gap-16 border-t border-black/10 px-6 py-24 text-center md:grid-cols-2">
+      <div className="mx-auto grid max-w-[1400px] gap-16 border-t border-black/10 px-6 py-16 text-center md:grid-cols-2 md:py-24">
         {[
         { title: 'For clients & startups', text: 'Looking to build a product that actually works?', cta: 'Let’s connect' },
         { title: 'Want to hire for real?', text: 'Got a real role or a real idea? I’m in.', cta: 'Let’s talk' }].

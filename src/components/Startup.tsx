@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useContent } from '../content/ContentProvider';
 import { CutButton } from './CutButton';
 
@@ -9,7 +9,7 @@ export function Startup() {
   const shown = group === 'All' ? startupProjects : startupProjects.filter((p) => p.group === group);
 
   return (
-    <section id="startup" className="stripes w-full py-24 text-white md:py-32">
+    <section id="startup" className="stripes w-full py-16 text-white md:py-32">
       <div data-big className="px-6 text-center">
         <h2 className="font-display text-6xl uppercase leading-none md:text-[7rem]">What I’m building</h2>
         <p className="mt-6 text-xl font-bold uppercase tracking-[-0.01em] text-brand md:text-[2.3rem]">
@@ -67,19 +67,19 @@ export function Startup() {
           </div>
         </div>
 
-        <ul data-stagger className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ul data-stagger className="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-6 lg:grid-cols-3">
           {shown.map((p) =>
-          <li key={p.title} className="group overflow-hidden rounded-[28px] bg-white/5 ring-1 ring-white/10 transition-transform duration-200 ease-out hover:-translate-y-1.5">
+          <li key={p.title} className="group overflow-hidden rounded-2xl bg-white/5 sm:rounded-[28px] ring-1 ring-white/10 transition-transform duration-200 ease-out hover:-translate-y-1.5">
               <div className="overflow-hidden">
                 <img src={p.image} alt={p.title} loading="lazy" className="aspect-[4/3] w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105" />
               </div>
-              <div className="flex items-start justify-between gap-4 p-6">
+              <div className="flex flex-col items-start gap-2 p-3 sm:flex-row sm:justify-between sm:gap-4 sm:p-6">
                 <div>
-                  <p className="text-2xl font-bold tracking-[-0.03em]">{p.title}</p>
-                  <p className="mt-1 text-base text-white/55">{p.tag}</p>
+                  <p className="text-base font-bold leading-tight tracking-[-0.03em] sm:text-2xl">{p.title}</p>
+                  <p className="mt-1 text-xs text-white/55 sm:text-base">{p.tag}</p>
                 </div>
                 {p.client &&
-              <span className="shrink-0 rounded-lg bg-lime px-3 py-1 text-sm font-bold text-ink">{p.client}</span>
+              <span className="shrink-0 rounded-md bg-lime px-2 py-0.5 text-[11px] font-bold text-ink sm:rounded-lg sm:px-3 sm:py-1 sm:text-sm">{p.client}</span>
               }
               </div>
             </li>

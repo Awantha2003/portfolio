@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { GlobeIcon, RocketIcon, StoreIcon, TrophyIcon, UsersIcon, BoxIcon } from "lucide-react";
+import { GlobeIcon, RocketIcon, StoreIcon, TrophyIcon, UsersIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useContent } from '../content/ContentProvider';
 import { CutButton } from "./CutButton";
-const iconMap: Record<string, BoxIcon> = {
+const iconMap: Record<string, LucideIcon> = {
   store: StoreIcon,
   trophy: TrophyIcon,
   globe: GlobeIcon,
@@ -72,7 +73,7 @@ function JourneyCard() {
 const bodyText ='text-2xl font-medium leading-snug tracking-[-0.02em] text-ink md:text-[2.5rem] md:leading-[1.2]';
 export function Story() {
   const { profile, stats, story, thenCameTags } = useContent();
-  return <section id="about" className="w-full bg-paper py-24 md:py-32">
+  return <section id="about" className="w-full bg-paper py-16 md:py-32">
       <div className="mx-auto max-w-[1350px] px-6 lg:pr-56">
         <div data-reveal className="space-y-4">
           {story.kicker.map((line, i) =>
@@ -86,7 +87,7 @@ export function Story() {
           </mark>
         </p>
 
-        <div data-stagger className={`mt-14 space-y-12 md:space-y-16 ${bodyText}`}>
+        <div data-stagger className={`mt-10 space-y-5 md:mt-14 md:space-y-16 ${bodyText}`}>
           {story.lines.map((line, i) => <p key={i}>{line}</p>)}
         </div>
 
@@ -112,7 +113,7 @@ export function Story() {
           {thenCameTags.map((t) => <li key={t} className="rounded-lg bg-lime px-5 py-2 text-lg font-bold tracking-tight text-ink md:text-2xl">{t}</li>)}
         </ul>
 
-        <div data-stagger className={`mt-14 space-y-12 md:space-y-16 ${bodyText}`}>
+        <div data-stagger className={`mt-10 space-y-5 md:mt-14 md:space-y-16 ${bodyText}`}>
           {story.today.map((line, i) => <p key={i}>{line}</p>)}
         </div>
 

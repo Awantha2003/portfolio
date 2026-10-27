@@ -1,8 +1,9 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { FigmaIcon, GithubIcon, GlobeIcon } from 'lucide-react';
 import { useContent } from '../content/ContentProvider';
 import { gsap, useIsoLayoutEffect } from '../hooks/useReveal';
 import { CutButton } from './CutButton';
+import { safeUrl } from '../lib/safeUrl';
 
 export function Building() {
   const { projects } = useContent();
@@ -31,7 +32,7 @@ export function Building() {
   const primary = links[0];
 
   return (
-    <section id="projects" className="grid-bg w-full pt-24 md:pt-32">
+    <section id="projects" className="grid-bg w-full pt-16 md:pt-32">
       <div data-big className="px-6 text-center">
         <h2 className="font-display text-6xl uppercase leading-none text-ink md:text-[7rem]">What I’ve built</h2>
         <p className="mt-6 text-xl font-bold uppercase tracking-[-0.01em] text-brand md:text-[2.3rem]">
@@ -77,7 +78,7 @@ export function Building() {
                 <dt className="text-base font-semibold uppercase text-black/55 md:text-lg">Links</dt>
                 <dd className="flex gap-5 text-ink">
                   {links.map(({ href, label, Icon }) =>
-                <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="transition-colors duration-150 hover:text-brand">
+                <a key={label} href={safeUrl(href)} target="_blank" rel="noopener noreferrer" aria-label={label} className="transition-colors duration-150 hover:text-brand">
                       <Icon className="h-8 w-8" />
                     </a>
                 )}
