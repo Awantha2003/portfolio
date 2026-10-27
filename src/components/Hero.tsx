@@ -1,120 +1,128 @@
-import React, { useEffect, useRef } from 'react';
-import Button from './ui/Button';
-import TypewriterText from './ui/TypewriterText';
-import FloatingTag from './ui/FloatingTag';
-import { ArrowRightIcon, MailIcon, ChevronDownIcon } from 'lucide-react';
-const Hero: React.FC = () => {
-  const blobRef = useRef<HTMLDivElement>(null);
-  const imageContainerRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!blobRef.current) return;
-      const {
-        clientX,
-        clientY
-      } = e;
-      const x = clientX / window.innerWidth;
-      const y = clientY / window.innerHeight;
-      // Subtle parallax effect
-      blobRef.current.style.transform = `translate(${x * 20 - 10}px, ${y * 20 - 10}px)`;
-      // 3D tilt effect for profile image
-      if (imageContainerRef.current) {
-        const rotateX = (y - 0.5) * 10; // -5 to 5 degrees
-        const rotateY = (0.5 - x) * 10; // -5 to 5 degrees
-        imageContainerRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-      }
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, []);
-  // Function to scroll to About section
-  const scrollToAbout = () => {
-    const aboutSection = document.getElementById('about');
-    if (aboutSection) {
-      aboutSection.scrollIntoView({
-        behavior: 'smooth'
+import React, { useEffect, useRef, useState } from 'react';
+import { CutButton } from './CutButton';
+import { gsap, useIsoLayoutEffect } from '../hooks/useReveal';
+import { useContent } from '../content/ContentProvider';
+
+export function Hero() {
+  const { ghostWords, images, hero, profile } = useContent();
+  const root = useRef<HTMLElement>(null);
+  const ghost = useRef<HTMLSpanElement>(null);
+  const [wordIndex, setWordIndex] = useState(0);
+
+  useIsoLayoutEffect(() => {
+    if (!root.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+      tl.from('.hero-bg', { scale: 1.12, duration: 1.4, ease: 'power2.out' }, 0).
+      from('.hero-line', { yPercent: 110, duration: 0.3, stagger: 0.09 }, 0.15).
+      from('.hero-sub', { y: 24, opacity: 0, duration: 0.3 }, '-=0.05').
+      from('.hero-form', { y: 24, opacity: 0, duration: 0.3 }, '-=0.2').
+      from('.hero-card', { y: 140, opacity: 0, duration: 0.3 }, '-=0.1');
+
+      gsap.fromTo(
+        '.hero-card',
+        { scale: 0.92 },
+        { scale: 1, ease: 'none', scrollTrigger: { trigger: '.hero-card', start: 'top bottom', end: 'top 20%', scrub: true } }
+      );
+      gsap.to('.hero-content', {
+        yPercent: 18,
+        opacity: 0.25,
+        ease: 'none',
+        scrollTrigger: { trigger: root.current, start: 'top top', end: '40% top', scrub: true }
       });
-    }
-  };
-  return <section id="home" className="relative min-h-screen w-full flex items-center justify-center pt-16 overflow-hidden">
-      {/* Background elements */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,107,0,0.1),transparent_70%)]"></div>
-      <div ref={blobRef} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-orange-500/10 blur-[80px] opacity-70 transition-transform duration-300"></div>
-      <div className="container mx-auto px-4 z-10 py-20">
-        <div className="flex flex-col items-center text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 relative">
-            Hi, I'm{' '}
-            <TypewriterText text="AWANTHA IMESH" className="text-orange-500" />
+    }, root);
+    return () => ctx.revert();
+  }, []);
+
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const t = setInterval(() => {
+      if (reduce || !ghost.current) {
+        setWordIndex((i) => (i + 1) % ghostWords.length);
+        return;
+      }
+      gsap.to(ghost.current, {
+        yPercent: -60,
+        opacity: 0,
+        duration: 0.25,
+        ease: 'power2.in',
+        onComplete: () => {
+          setWordIndex((i) => (i + 1) % ghostWords.length);
+          gsap.fromTo(ghost.current, { yPercent: 60, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.3, ease: 'power3.out' });
+        }
+      });
+    }, 2400);
+    return () => clearInterval(t);
+  }, []);
+
+  return (
+    <section id="home" ref={root} className="relative w-full overflow-hidden bg-white">
+      <div
+        className="relative overflow-hidden bg-black pb-[22vw] pt-32 md:pt-44"
+        style={{ clipPath: 'polygon(0 0, 100% 0, 100% 92%, 94% 94%, 6% 96%, 0 90%)' }}>
+        
+        <video
+          className="hero-bg absolute inset-0 h-full w-full object-cover opacity-40"
+          src={images.showreel}
+          poster={images.heroBg}
+          autoPlay
+          muted
+          loop
+          playsInline
+          aria-hidden="true" />
+        
+        <div className="absolute inset-0 bg-black/55" />
+
+        <div className="hero-content relative mx-auto max-w-[1500px] px-6 text-center">
+          <h1 className="hero-sub mb-6 text-sm font-semibold uppercase tracking-[0.3em] text-white/70 md:mb-8 md:text-lg">
+            {profile.name} <span className="text-brand">·</span> {profile.role}
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mb-8 animate-fade-in">
-            Full Stack Developer & UI/UX Engineer
+          <p className="font-display uppercase leading-[0.9] tracking-[-0.01em] text-white text-[clamp(2.9rem,7.6vw,8.8rem)]">
+            {hero.lines.map((l) =>
+            <span key={l.accent} className="block overflow-hidden">
+                <span className="hero-line block">
+                  {l.text} <span className="text-brand">{l.accent}</span>
+                  <span className="text-white">.</span>{' '}
+                </span>
+              </span>
+            )}
           </p>
-          {/* Floating tags */}
-          <div className="flex flex-wrap justify-center gap-3 mb-12">
-            <FloatingTag delay={200}>React</FloatingTag>
-            <FloatingTag delay={400}>Spring Boot</FloatingTag>
-            <FloatingTag delay={600}>MongoDB</FloatingTag>
-            <FloatingTag delay={800}>TailwindCSS</FloatingTag>
-          </div>
-          {/* Profile image with 3D effect */}
-          <div className="relative mb-12 group" ref={imageContainerRef} style={{
-          transition: 'transform 0.3s ease-out'
-        }}>
-            {/* Animated glow rings */}
-            <div className="absolute inset-0 rounded-full animate-ping opacity-30 bg-orange-500/10" style={{
-            animationDuration: '3s'
-          }}></div>
-            <div className="absolute inset-0 rounded-full animate-ping opacity-20 bg-orange-500/10" style={{
-            animationDuration: '4s',
-            animationDelay: '1s'
-          }}></div>
-            <div className="absolute inset-0 bg-orange-500/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 opacity-70"></div>
-            <div className="relative w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-2 border-orange-500/50 p-1">
-              <img src="/my2.jpg" alt="Awantha Imesh" className="w-full h-full object-cover rounded-full" />
-            </div>
-            {/* Orbital circles */}
-            <div className="absolute inset-[-20px] rounded-full border border-orange-500/20 animate-spin" style={{
-            animationDuration: '15s'
-          }}></div>
-            <div className="absolute inset-[-40px] rounded-full border border-orange-500/10 animate-spin" style={{
-            animationDuration: '20s',
-            animationDirection: 'reverse'
-          }}></div>
-          </div>
-          {/* CTA buttons with hover effects */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Button href="#projects" icon={<ArrowRightIcon size={16} className="group-hover:translate-x-1 transition-transform" />} className="group overflow-hidden relative before:absolute before:inset-0 before:bg-orange-500/10 before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-500">
-              See My Work
-            </Button>
-            <Button variant="secondary" href="#contact" icon={<MailIcon size={16} className="group-hover:scale-110 transition-transform" />} className="group">
-              Contact Me
-            </Button>
+          <p className="hero-sub mx-auto mt-10 max-w-[960px] text-xl font-light leading-snug text-white/90 md:text-[2.6rem] md:leading-[1.25]">
+            {hero.subtitle.map((line, i) =>
+            <React.Fragment key={i}>
+                {i > 0 && <br className="hidden md:block" />}
+                {i > 0 && ' '}{line}
+              </React.Fragment>
+            )}
+          </p>
+          <div className="hero-form mt-12 flex flex-wrap justify-center gap-4 md:mt-14">
+            <CutButton href="#projects">See my work</CutButton>
+            <CutButton href="#contact">Contact me</CutButton>
           </div>
         </div>
+
+        <p
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-[3vw] left-0 right-0 overflow-hidden text-center font-sans font-black lowercase leading-none tracking-tighter text-white/25 text-[clamp(4rem,9vw,10rem)]">
+          
+          <span ref={ghost} className="inline-block">{ghostWords[wordIndex]}</span>
+        </p>
       </div>
-      {/* Enhanced Scroll Button - dark mode only */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-50">
-        <button onClick={scrollToAbout} className="flex flex-col items-center group cursor-pointer transition-all duration-500 p-3 rounded-2xl bg-black/30 hover:bg-black/50" aria-label="Scroll to About section">
-          <span className="text-sm font-medium mb-1 transition-colors text-gray-300 group-hover:text-orange-500">
-            Discover More
-          </span>
-          <div className="relative w-10 h-16 rounded-full flex justify-center items-start p-1 transition-all duration-500 bg-black/30 border-2 border-orange-500/50 group-hover:border-orange-500">
-            <div className="w-3 h-3 rounded-full animate-bounce mt-2 bg-orange-500"></div>
-          </div>
-          <div className="mt-2 flex flex-col items-center">
-            <ChevronDownIcon className="animate-bounce text-orange-500" size={20} />
-            <ChevronDownIcon className="animate-bounce animation-delay-500 text-orange-400 opacity-60" size={16} style={{
-            animationDelay: '0.2s'
-          }} />
-          </div>
-          {/* Animated pulse effect */}
-          <div className="absolute inset-0 rounded-2xl bg-orange-500/20 animate-ping opacity-30" style={{
-          animationDuration: '3s'
-        }}></div>
-        </button>
+
+      <div className="relative z-10 mx-auto -mt-[14vw] max-w-[1680px] px-4 pb-10 md:px-[6%]">
+        <div className="hero-card overflow-hidden rounded-[28px] bg-black shadow-[0_40px_90px_-30px_rgba(0,0,0,0.6)]">
+          <video
+            src={images.showreel}
+            poster={images.heroPortrait}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="aspect-[16/9] w-full object-cover"
+            aria-label="Showreel" />
+          
+        </div>
       </div>
-    </section>;
-};
-export default Hero;
+    </section>);
+
+}

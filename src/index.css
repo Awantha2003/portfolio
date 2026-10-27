@@ -1,108 +1,66 @@
-/* PLEASE NOTE: THESE TAILWIND IMPORTS SHOULD NEVER BE DELETED */
+/* @import url() FONT IMPORTS MUST ALWAYS BE AT THE VERY TOP OF THIS FILE, ABOVE THE TAILWIND IMPORTS — DO NOT DELETE THIS COMMENT */
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter+Tight:wght@300;400;500;600;700;800;900&display=swap');
+
+/* CRITICAL: THE FOLLOWING TAILWIND IMPORTS MUST NEVER BE DELETED OR REORDERED — DO NOT DELETE THIS COMMENT */
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
-/* DO NOT DELETE THESE TAILWIND IMPORTS, OTHERWISE THE STYLING WILL NOT RENDER AT ALL */
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
-@keyframes fade-in-up {
-  from { 
-    opacity: 0; 
-    transform: translateY(30px) scale(0.95); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0) scale(1); 
-  }
-}
+/* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
 
-.animate-fade-in {
-  animation: fade-in 0.8s ease-out forwards;
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out forwards;
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-@keyframes grow-up {
-  from { height: 0; }
-  to { height: 100%; }
-}
-.timeline-connector {
-  animation: grow-up 1.5s ease-out forwards;
-}
-@keyframes rotate-3d {
-  0% { transform: perspective(1000px) rotateY(0deg); }
-  100% { transform: perspective(1000px) rotateY(360deg); }
-}
-.project-card:hover {
-  box-shadow: 0 25px 50px -12px rgba(255, 107, 0, 0.15);
-  transform: translateY(-5px);
-}
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 10px 5px rgba(255, 107, 0, 0.2); }
-  50% { box-shadow: 0 0 20px 10px rgba(255, 107, 0, 0.4); }
-}
-.pulse-glow {
-  animation: pulse-glow 3s infinite;
-}
 html {
   scroll-behavior: smooth;
 }
 body {
-  background-color: black;
-  color: white;
+  font-family: 'Inter Tight', system-ui, sans-serif;
+  background: #ffffff;
+  color: #0b0b0b;
+  -webkit-font-smoothing: antialiased;
 }
-/* Custom cursor */
-.custom-cursor {
-  position: fixed;
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(255, 107, 0, 0.5);
-  border-radius: 50%;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  z-index: 9999;
-  transition: width 0.3s, height 0.3s, border-color 0.3s;
+/* Cut bottom-right corner used on nav tabs and CTAs */
+.cut {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
 }
-.custom-cursor.hover {
-  width: 40px;
-  height: 40px;
-  border-color: rgba(255, 107, 0, 0.8);
+/* Diagonal hatch for the "Not for everyone" panel */
+.hatch {
+  background-color: #f7f7f8;
+  background-image: repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.035) 0 14px, transparent 14px 28px);
 }
-/* Smooth scroll behavior */
-html {
-  scroll-behavior: smooth;
+/* Dark stripes for the milestone card */
+.stripes {
+  background-color: #0b0b0b;
+  background-image: repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.04) 0 18px, transparent 18px 36px);
 }
-/* Improve button hover states */
-button, a {
-  transition: all 0.3s ease;
+/* Faint blueprint grid */
+.grid-bg {
+  background-color: #ffffff;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 75px 75px;
 }
-/* Fix for scroll button */
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
+/* Outlined orange numbers */
+.num-stroke {
+  -webkit-text-stroke: 2px #0b0b0b;
+  paint-order: stroke fill;
+}
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.hl {
+  background-image: linear-gradient(#e4f53b, #e4f53b);
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 0% 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hl {
+    background-size: 100% 100%;
   }
-  50% {
-    transform: translateY(-10px);
-  }
 }
-.animate-bounce {
-  animation: bounce 1.5s ease infinite;
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
-.animation-delay-500 {
-  animation-delay: 0.5s;
-}
-/* Ensure the scroll button is above other elements */
-#home .absolute.bottom-10 {
-  z-index: 50 !important;
+.no-scrollbar {
+  scrollbar-width: none;
 }

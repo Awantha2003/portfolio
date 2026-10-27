@@ -1,41 +1,20 @@
-# Portfolio
+# Awantha Imesh — Portfolio
 
-React, Vite, TypeScript, and Vercel API portfolio app.
+Personal portfolio with a built-in admin panel.
 
-## Scripts
+- **Frontend:** React + Vite + Tailwind, pre-rendered at build time for SEO
+- **Backend:** Vercel serverless functions in `api/`
+- **Database:** Neon Postgres (`site_content` table, created automatically)
+- **Media:** Cloudinary
 
-```bash
-npm run dev
-npm run dev:vercel
-npm run build
-npm run lint
-```
-
-## Backend
-
-Backend endpoints run as Vercel serverless functions in `api`.
-
-- `POST /api/contact` accepts contact form submissions.
-- `POST /api/upload-image` uploads base64 image data to Cloudinary.
-- `POST /api/admin-login` validates admin login credentials.
-
-Image uploads are limited to 5 MB before base64 encoding.
-
-## Environment
-
-Set these in a local `.env.local` file or your hosting provider environment:
+## Run locally
 
 ```bash
-ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD=change_this_password
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-CLOUDINARY_FOLDER=portfolio/project-images
-DATABASE_URL=postgresql://user:password@host/database?sslmode=require
+cp .env.example .env.local   # fill in the values
+npm install
+npm run dev                  # site on http://localhost:5173, admin on /admin
 ```
 
-For Vercel, set the same values in Project Settings > Environment Variables.
-Use `npm run dev:vercel` when testing the `/api` backend locally.
+## Environment variables
 
-The Vercel SPA rewrite excludes `/api/*` so serverless functions can handle backend requests.
+`DATABASE_URL`, `ADMIN_PASSWORD`, `SESSION_SECRET`, `CLOUDINARY_URL` (or `CLOUDINARY_CLOUD_NAME` / `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET`), and optionally `SITE_URL` and `GOOGLE_SITE_VERIFICATION`. See `.env.example`.

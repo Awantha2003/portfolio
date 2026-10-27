@@ -1,50 +1,40 @@
-import { useEffect, useState } from 'react';
-import Header from './components/Header';
-import Hero from './components/Hero';
-import About from './components/About';
-import Resume from './components/Resume';
-import Projects from './components/Projects';
-import AdminSection from './components/AdminSection';
-import Skills from './components/Skills';
-import Contact from './components/Contact';
-import Footer from './components/Footer';
-import ScrollProgress from './components/ui/ScrollProgress';
-import ParticleBackground from './components/ui/ParticleBackground';
-import WhatsAppButton from './components/WhatsAppButton';
-import SEO from './components/SEO';
-import GitHubProjects from './components/GitHubProjects';
-export function App() {
-  const [scrollY, setScrollY] = useState(0);
-  const isAdminPage = window.location.pathname === '/admin';
-  const isGitPage = window.location.pathname === '/git';
+import React, { useRef } from 'react';
+import { SideNav } from './components/SideNav';
+import { Hero } from './components/Hero';
+import { BrandStrip } from './components/BrandStrip';
+import { Audience } from './components/Audience';
+import { Story } from './components/Story';
+import { Startup } from './components/Startup';
+import { BattleLogs } from './components/BattleLogs';
+import { Building } from './components/Building';
+import { ContentOffers } from './components/ContentOffers';
+import { HowItsDone } from './components/HowItsDone';
+import { MicSection } from './components/MicSection';
+import { ListPodcast } from './components/ListPodcast';
+import { Footer } from './components/Footer';
+import { useReveal } from './hooks/useReveal';
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-  return <div className="bg-black text-white min-h-screen w-full">
-      <SEO />
-      <ParticleBackground />
-      <ScrollProgress />
-      <WhatsAppButton />
-      <Header scrollY={scrollY} />
-      {isAdminPage ? <main className="pt-20">
-          <AdminSection />
-        </main> : isGitPage ? <main>
-          <GitHubProjects />
-        </main> : <main>
-          <Hero />
-          <About />
-          <Resume />
-          <Projects />
-          <Skills />
-          <Contact />
-        </main>}
+export function App() {
+  const root = useRef<HTMLDivElement>(null);
+  useReveal(root);
+
+  return (
+    <div ref={root} className="w-full min-h-screen overflow-x-hidden bg-white">
+      <SideNav />
+      <main>
+        <Hero />
+        <BrandStrip />
+        <Audience />
+        <Story />
+        <Startup />
+        <BattleLogs />
+        <Building />
+        <ContentOffers />
+        <HowItsDone />
+        <MicSection />
+        <ListPodcast />
+      </main>
       <Footer />
-    </div>;
+    </div>);
+
 }

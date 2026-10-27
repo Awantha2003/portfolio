@@ -1,45 +1,49 @@
-import React from 'react';
-import { GithubIcon, LinkedinIcon, FileTextIcon, ArrowUpIcon } from 'lucide-react';
-const Footer: React.FC = () => {
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  };
-  return <footer className="py-12 bg-black border-t border-orange-500/20">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="mb-6 md:mb-0">
-            <a href="#home" className="text-2xl font-bold tracking-tighter">
-              AWANTHA<span className="text-orange-500">.</span>
-            </a>
-            <p className="text-gray-400 mt-2">
-              Full Stack Developer & UI/UX Engineer
-            </p>
-          </div>
-          <div className="flex space-x-6">
-            <a href="https://github.com/Awantha2003" className="text-gray-400 hover:text-orange-500 transition-colors" aria-label="GitHub" target="_blank" rel="noopener noreferrer">
-              <GithubIcon size={20} />
-            </a>
-            <a href="https://www.linkedin.com/in/awanthaimesh/" className="text-gray-400 hover:text-orange-500 transition-colors" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
-              <LinkedinIcon size={20} />
-            </a>
-            <a href="https://drive.google.com/uc?export=download&id=1OTrqNG6cXWZkoXwahXFOjmVy68eg6Kqg" className="text-gray-400 hover:text-orange-500 transition-colors" aria-label="Resume" download="Awantha_Imesh_CV.pdf">
-              <FileTextIcon size={20} />
-            </a>
-          </div>
+import React from "react";
+import { GithubIcon, LinkedinIcon, MailIcon, BoxIcon } from "lucide-react";
+import { CutButton } from "./CutButton";
+import { socialsFor } from "../data/content";
+import { useContent } from '../content/ContentProvider';
+const iconMap: Record<string, BoxIcon> = {
+  github: GithubIcon,
+  linkedin: LinkedinIcon,
+  mail: MailIcon
+};
+export function Footer() {
+  const { profile } = useContent();
+  return <footer id="join" className="w-full bg-[#0a0a0a] text-white">
+      <div className="mx-auto max-w-[1100px] px-6 pb-28 pt-32 text-center md:pt-36">
+        <h2 data-big className="font-display text-7xl uppercase leading-none tracking-[-0.01em] md:text-[9rem]">
+          Let’s build<span className="text-brand">.</span>
+        </h2>
+        <p data-reveal className="mx-auto mt-12 max-w-[960px] text-xl font-light leading-snug text-white/85 md:text-[2.6rem] md:leading-[1.25]">
+          Projects, freelance work or a full-time role — let’s build what’s next.
+        </p>
+        <div data-reveal className="mt-12 flex flex-wrap justify-center gap-4">
+          <CutButton href={`mailto:${profile.email}`}>Email me</CutButton>
+          <CutButton href={profile.resumeUrl}>Download CV</CutButton>
         </div>
-        <div className="mt-8 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-500 text-sm">
-            © {new Date().getFullYear()} Awantha Imesh. All Rights Reserved.
+        <ul className="mt-12 flex flex-wrap justify-center gap-x-11 gap-y-4">
+          {socialsFor(profile).map((s) => {
+          const Icon = iconMap[s.platform];
+          return <li key={s.platform}>
+                <a href={s.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-xl text-white/75 transition-colors duration-150 hover:text-white md:text-2xl">
+                  <Icon className="h-7 w-7" /> {s.handle}
+                </a>
+              </li>;
+        })}
+        </ul>
+        <p className="mx-auto mt-20 max-w-[880px] text-base leading-relaxed text-white/45 md:text-lg">
+          {profile.name} is the founder of WOLFENOX, a software engineer, UI/UX engineer and Information Technology undergraduate at SLIIT. With 20+ projects and clients in
+          Sri Lanka, India and the USA, {profile.firstName} turns ideas into working products, designs clean interfaces people enjoy and ships code that lasts.
+        </p>
+      </div>
+      <div className="border-t border-white/10 bg-black">
+        <div className="mx-auto flex max-w-[1820px] flex-col items-center justify-between gap-3 px-6 py-7 text-sm uppercase tracking-[0.08em] text-white/55 md:flex-row md:px-12 md:text-lg">
+          <p>© 2026 {profile.name}. All rights reserved.</p>
+          <p>
+            Designed &amp; built by <span className="text-brand">{profile.firstName}</span>
           </p>
-          <button onClick={scrollToTop} className="mt-4 md:mt-0 flex items-center gap-2 text-gray-400 hover:text-orange-500 transition-colors" aria-label="Scroll to top">
-            <span className="text-sm">Back to top</span>
-            <ArrowUpIcon size={16} />
-          </button>
         </div>
       </div>
     </footer>;
-};
-export default Footer;
+}
